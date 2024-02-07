@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { Client, IntentsBitField } = require('discord.js');
+const { Client, IntentsBitField, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -31,7 +31,23 @@ client.on('interactionCreate', (interaction) => {
     }
 
     if (interaction.commandName === "archive") {
-        interaction.reply("Not yet completed.");
+        console.log(interaction);
+        console.log(interaction.user.globalName);
+        console.log(interaction.channel.name);
+        console.log(interaction.member.displayHexColor);
+
+        const embed = new EmbedBuilder()
+            .setTitle('Embed title')
+            .setDescription('This is a description')
+            .setFields(
+                {name: 'Sent by', value: 'Bananas'},
+                {name: 'Archived by', value: `${interaction.user.globalName}`}
+            )
+            .setTimestamp(Date.now())
+            .setColor(interaction.member.displayHexColor);
+        interaction.reply('Got it!');
+        client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+        
     }
 
 })
