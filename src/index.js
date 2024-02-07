@@ -76,24 +76,6 @@ async function fetchChannelMessages(channel, limit) {
     return messages;
 }
 
-function canArchive(messages, url) {
-    try {
-        console.log(messages);
-        console.log(typeof(messages));
-        for (const message in messages) {
-            console.log("in the loop")
-            console.log(message.embeds);
-            if (message.embeds && message.embeds[0].url === url) {
-                console.log(":(");
-                return false;
-            }
-        }
-    return true;
-    } catch (error) {
-        console.error(`Error: ${error}`);
-    }
-}
-
 function addToArchives(message, archiver) {
     const channel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
 
