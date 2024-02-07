@@ -82,9 +82,9 @@ function addToArchives(message, archiver) {
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`;
 
     let truthVal = true;
+    console.log(message);
     fetchChannelMessages(channel, 100)
         .then(messages => {
-            console.log(messages);
             for (const message of messages) {
                 if (message[1].embeds[0].url === url) { // SHOULD IMPROVE -- NOT ROBUST AT ALL!
                     truthVal = false;
@@ -100,6 +100,7 @@ function addToArchives(message, archiver) {
                     .addFields(
                         {name: 'Sent by', value: `${message.member.displayName}`, inline: true},
                         {name: 'Archived by', value: `${archiver}`, inline: true},
+                        {name: 'Channel', value: `${client.channels.cache.get(message.channelId).name}`}
                     )
                     .setTimestamp(message.createdTimestamp)
                     .setThumbnail(message.member.user.avatarURL()) // avatarURL is a user attribute
