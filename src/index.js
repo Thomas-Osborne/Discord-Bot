@@ -31,21 +31,20 @@ client.on('interactionCreate', (interaction) => {
     }
 
     if (interaction.commandName === 'Add to Archives') {
-        console.log(interaction);
-        console.log(interaction.targetMessage);
+        console.log(interaction.member.displayHexColor);
         const embed = new EmbedBuilder()
             .setTitle('Archive Entry: #xx')
             .setDescription(interaction.targetMessage.content)
             .setFields(
-                {name: 'Sent by', value: `${interaction.targetMessage.author.username}`},
-                {name: 'Archived by', value: `${interaction.user.username}`}
+                {name: 'Sent by', value: `${interaction.targetMessage.member.displayName}`},
+                {name: 'Archived by', value: `${interaction.member.displayName}`}
             )
             .setTimestamp(interaction.targetMessage.createdTimestamp)
-            .setColor(interaction.member.displayHexColor)
-            .setThumbnail(interaction.targetMessage.author.avatarURL())
+            .setColor(interaction.targetMessage.member.displayHexColor)
+            .setThumbnail(interaction.targetMessage.member.avatarURL())
         client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
 
-        interaction.reply(`<@${interaction.user.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+        interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.member.id}>'s message!`);
         
     }
 
