@@ -35,16 +35,18 @@ client.on('interactionCreate', (interaction) => {
         console.log(interaction.user.globalName);
         console.log(interaction.channel.name);
         console.log(interaction.member.displayHexColor);
+        console.log(interaction.user.defaultAvatarURL);
 
         const embed = new EmbedBuilder()
-            .setTitle('Embed title')
-            .setDescription('This is a description')
+            .setTitle('Archive Entry Number xx')
+            .setDescription('Message Contents')
             .setFields(
                 {name: 'Sent by', value: 'Bananas'},
                 {name: 'Archived by', value: `${interaction.user.globalName}`}
             )
             .setTimestamp(Date.now())
-            .setColor(interaction.member.displayHexColor);
+            .setColor(interaction.member.displayHexColor)
+            .setThumbnail(interaction.user.defaultAvatarURL)
         interaction.reply('Got it!');
         client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
         
