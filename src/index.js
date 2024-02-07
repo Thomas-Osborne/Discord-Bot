@@ -44,7 +44,8 @@ client.on('interactionCreate', (interaction) => {
             .setColor(interaction.member.displayHexColor)
             .setThumbnail(interaction.targetMessage.author.avatarURL())
         client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
-        interaction.reply('Archived!');
+
+        interaction.reply(`<@${interaction.user.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
         
     }
 
