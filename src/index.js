@@ -12,4 +12,29 @@ const client = new Client({
 });
 
 client.login(process.env.TOKEN);
-console.log("The bot is online.")
+
+client.on('ready', (c) => {
+    console.log(`${c.user.username} is online!`);
+})
+
+client.on('interactionCreate', (interaction) => {
+    if (!interaction.isChatInputCommand()) {
+        return;
+    }
+
+    if (interaction.commandName === "hey") {
+        interaction.reply("Hi there!");
+    }
+})
+
+client.on('messageCreate', (message) => {
+    if (message.author.bot) {
+        return;
+    }
+
+    if (message.content == 'hello') {
+        message.reply('Hi there!');
+    } else {
+        console.log('Message received.');
+    }
+})
