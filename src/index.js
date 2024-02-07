@@ -18,37 +18,33 @@ client.on('ready', (c) => {
 })
 
 client.on('interactionCreate', (interaction) => {
-    if (!interaction.isChatInputCommand()) {
+    if (!(interaction.isChatInputCommand() || interaction.isMessageContextMenuCommand)) {
         return;
     }
 
-    if (interaction.commandName === "hey") {
-        interaction.reply("Hi there!");
+    if (interaction.commandName === 'hey') {
+        interaction.reply('Hi there!');
     }
 
-    if (interaction.commandName === "ping") {
-        interaction.reply("Pong!");
+    if (interaction.commandName === 'ping') {
+        interaction.reply('Pong!');
     }
 
-    if (interaction.commandName === "archive") {
+    if (interaction.commandName === 'Add to Archives') {
         console.log(interaction);
-        console.log(interaction.user.globalName);
-        console.log(interaction.channel.name);
-        console.log(interaction.member.displayHexColor);
-        console.log(interaction.user.defaultAvatarURL);
-
+        console.log(interaction.targetMessage);
         const embed = new EmbedBuilder()
-            .setTitle('Archive Entry Number xx')
-            .setDescription('Message Contents')
+            .setTitle('Archive Entry: #xx')
+            .setDescription(interaction.targetMessage.content)
             .setFields(
-                {name: 'Sent by', value: 'Bananas'},
-                {name: 'Archived by', value: `${interaction.user.globalName}`}
+                {name: 'Sent by', value: `${interaction.targetMessage.author.username}`},
+                {name: 'Archived by', value: `${interaction.user.username}`}
             )
-            .setTimestamp(Date.now())
+            .setTimestamp(interaction.targetMessage.createdTimestamp)
             .setColor(interaction.member.displayHexColor)
-            .setThumbnail(interaction.user.defaultAvatarURL)
-        interaction.reply('Got it!');
+            .setThumbnail(interaction.targetMessage.author.avatarURL())
         client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+        interaction.reply('Archived!');
         
     }
 

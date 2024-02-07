@@ -1,27 +1,18 @@
 require('dotenv').config();
-const { REST, Routes } = require('discord.js');
+const { REST, Routes, ContextMenuCommandBuilder, ApplicationCommandType } = require('discord.js');
 
 const commands = [
-    {
-        name: 'hey',
-        description: 'Replies with hey!',
-    },
-    {
-        name: 'ping',
-        description: 'Replies with pong'
-    },
-    {
-        name: 'archive',
-        description: 'Adds a replied-to message to the Archive Channel.'
-    }
-]
+    new ContextMenuCommandBuilder()
+        .setName('Add to Archives')
+        .setType(ApplicationCommandType.Message),
+];
 
 const rest = new REST().setToken(process.env.TOKEN);
 
 
 (async () => {
     try {
-        console.log('Registering slash commands...');
+        console.log('Registering commands...');
 
         await rest.put(
             Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
@@ -30,7 +21,7 @@ const rest = new REST().setToken(process.env.TOKEN);
             }
         )
         
-        console.log('Slash commands registered.');
+        console.log('Commands registered.');
     } catch (error) {
         console.log(`Error: ${error}`);
     }
