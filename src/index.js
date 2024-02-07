@@ -37,9 +37,14 @@ client.on('interactionCreate', (interaction) => {
     }
 
     if (interaction.commandName === 'Add to Archives') {
-        addToArchives(interaction.targetMessage, interaction.member.displayName);
-        interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.member.id}>'s message!`);
-        
+        if (interaction.targetMessage.member.user.bot) {
+            interaction.reply({ content: 'You cannot add a bot message to the archives.', ephemeral: true }); // cannot archive a bot message
+        } else if (interaction.targetMessage.member.id === interaction.member.id) {
+            interaction.reply({ content: 'You cannot add your own message to the archives!', ephemeral: true }); // user cannot archive their own message
+        } else {
+            addToArchives(interaction.targetMessage, interaction.member.displayName);
+            interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.member.id}>'s message!`);
+        }        
     }
 
 })
@@ -56,7 +61,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 		}
     }
 
-    if (reaction.count == MAX_REACTS) {
+    if (reaction.count == MAX_REACTS && !(reaction.message.author.bot)) {
         addToArchives(reaction.message, `Maximum reacts of ${reaction.emoji.name}`);
     }
 })
@@ -74,7 +79,7 @@ client.on('messageCreate', (message) => {
 })
 
 function addToArchives(message, archiver) {
-    console.log(message.member);
+    // console.log(message.member);
     const embed = new EmbedBuilder()
         .setTitle('Archive Entry: #xx')
         .setDescription(message.content)
