@@ -25,6 +25,15 @@ client.on('interactionCreate', (interaction) => {
     if (interaction.commandName === "hey") {
         interaction.reply("Hi there!");
     }
+
+    if (interaction.commandName === "ping") {
+        interaction.reply("Pong!");
+    }
+
+    if (interaction.commandName === "archive") {
+        interaction.reply("Not yet completed.");
+    }
+
 })
 
 client.on('messageCreate', (message) => {
