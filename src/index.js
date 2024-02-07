@@ -60,7 +60,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 		}
     }
 
-    console.log(reaction.emoji);
     if (reaction.count == MAX_REACTS && !(reaction.message.author.bot)) {
         let emojiStr;
         if (reaction.emoji.id) {
@@ -72,19 +71,61 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     }
 })
 
+async function fetchChannelMessages(channel, limit) {
+    const messages = await channel.messages.fetch({ limit: 100 });
+    return messages;
+}
+
+function canArchive(messages, url) {
+    try {
+        console.log(messages);
+        console.log(typeof(messages));
+        for (const message in messages) {
+            console.log("in the loop")
+            console.log(message.embeds);
+            if (message.embeds && message.embeds[0].url === url) {
+                console.log(":(");
+                return false;
+            }
+        }
+    return true;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+    }
+}
+
 function addToArchives(message, archiver) {
-    const embed = new EmbedBuilder()
-        .setColor(message.member.displayHexColor)
-        .setTitle('Archive Entry: #xx')
-        .setURL(`http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`)
-        .setDescription(message.content)
-        .addFields(
-            {name: 'Sent by', value: `${message.member.displayName}`, inline: true},
-            {name: 'Archived by', value: `${archiver}`, inline: true},
-        )
-        .setTimestamp(message.createdTimestamp)
-        .setThumbnail(message.member.user.avatarURL()) // avatarURL is a user attribute
-        
-    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+    const channel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
+
+    const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`;
+
+    let truthVal = true;
+    fetchChannelMessages(channel, 100)
+        .then(messages => {
+            console.log(messages);
+            for (const message of messages) {
+                if (message[1].embeds[0].url === url) { // SHOULD IMPROVE -- NOT ROBUST AT ALL!
+                    truthVal = false;
+                    break;
+                }
+            }
+            if (truthVal) {
+                const embed = new EmbedBuilder()
+                    .setColor(message.member.displayHexColor)
+                    .setTitle('Archive Entry: #xx')
+                    .setURL(`http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`)
+                    .setDescription(message.content)
+                    .addFields(
+                        {name: 'Sent by', value: `${message.member.displayName}`, inline: true},
+                        {name: 'Archived by', value: `${archiver}`, inline: true},
+                    )
+                    .setTimestamp(message.createdTimestamp)
+                    .setThumbnail(message.member.user.avatarURL()) // avatarURL is a user attribute
+                    
+                client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+            }
+        }
+    ) 
+
     return;
 }
