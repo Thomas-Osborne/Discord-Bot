@@ -51,7 +51,6 @@ client.on('interactionCreate', (interaction) => {
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
     const MAX_REACTS = 1;
-
     if (reaction.partial) {
         try {
 			await reaction.fetch();
@@ -61,35 +60,25 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 		}
     }
 
+    console.log(reaction.emoji);
     if (reaction.count == MAX_REACTS && !(reaction.message.author.bot)) {
         addToArchives(reaction.message, `Maximum reacts of ${reaction.emoji.name}`);
     }
 })
 
-client.on('messageCreate', (message) => {
-    if (message.author.bot) {
-        return;
-    }
-
-    if (message.content == 'hello') {
-        message.reply('Hi there!');
-    } else {
-        console.log('Message received.');
-    }
-})
-
 function addToArchives(message, archiver) {
-    // console.log(message.member);
     const embed = new EmbedBuilder()
+        .setColor(message.member.displayHexColor)
         .setTitle('Archive Entry: #xx')
+        .setURL(`http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`)
         .setDescription(message.content)
-        .setFields(
-            {name: 'Sent by', value: `${message.member.displayName}`},
-            {name: 'Archived by', value: `${archiver}`}
+        .addFields(
+            {name: 'Sent by', value: `${message.member.displayName}`, inline: true},
+            {name: 'Archived by', value: `${archiver}`, inline: true},
         )
         .setTimestamp(message.createdTimestamp)
-        .setColor(message.member.displayHexColor)
         .setThumbnail(message.member.user.avatarURL()) // avatarURL is a user attribute
+        
     client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
     return;
 }
