@@ -1,13 +1,19 @@
 require('dotenv').config();
 
-const { Client, IntentsBitField, EmbedBuilder } = require('discord.js');
+const { Client, Events, IntentsBitField, Partials, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
     intents: [
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildMembers,
         IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildMessageReactions,
         IntentsBitField.Flags.MessageContent,
+    ],
+    partials: [
+        Partials.User,
+        Partials.Message,
+        Partials.Reaction,
     ]
 });
 
@@ -31,23 +37,28 @@ client.on('interactionCreate', (interaction) => {
     }
 
     if (interaction.commandName === 'Add to Archives') {
-        console.log(interaction.member.displayHexColor);
-        const embed = new EmbedBuilder()
-            .setTitle('Archive Entry: #xx')
-            .setDescription(interaction.targetMessage.content)
-            .setFields(
-                {name: 'Sent by', value: `${interaction.targetMessage.member.displayName}`},
-                {name: 'Archived by', value: `${interaction.member.displayName}`}
-            )
-            .setTimestamp(interaction.targetMessage.createdTimestamp)
-            .setColor(interaction.targetMessage.member.displayHexColor)
-            .setThumbnail(interaction.targetMessage.member.avatarURL())
-        client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
-
+        addToArchives(interaction.targetMessage, interaction.member.displayName);
         interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.member.id}>'s message!`);
         
     }
 
+})
+
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+    const MAX_REACTS = 1;
+
+    if (reaction.partial) {
+        try {
+			await reaction.fetch();
+		} catch (error) {
+			console.error(`Error: ${error}`);
+			return;
+		}
+    }
+
+    if (reaction.count == MAX_REACTS) {
+        addToArchives(reaction.message, `Maximum reacts of ${reaction.emoji.name}`);
+    }
 })
 
 client.on('messageCreate', (message) => {
@@ -61,3 +72,18 @@ client.on('messageCreate', (message) => {
         console.log('Message received.');
     }
 })
+
+function addToArchives(message, archiver) {
+    const embed = new EmbedBuilder()
+        .setTitle('Archive Entry: #xx')
+        .setDescription(message.content)
+        .setFields(
+            {name: 'Sent by', value: `${message.member.displayName}`},
+            {name: 'Archived by', value: `${archiver}`}
+        )
+        .setTimestamp(message.createdTimestamp)
+        .setColor(message.member.displayHexColor)
+        .setThumbnail(message.member.avatarURL())
+    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+    return;
+}
