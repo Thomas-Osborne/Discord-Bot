@@ -37,13 +37,13 @@ client.on('interactionCreate', (interaction) => {
     }
 
     if (interaction.commandName === 'Add to Archives') {
-        if (interaction.targetMessage.member.user.bot) {
+        if (interaction.targetMessage.author.bot) {
             interaction.reply({ content: 'You cannot add a bot message to the archives.', ephemeral: true }); // cannot archive a bot message
-        } else if (interaction.targetMessage.member.id === interaction.member.id) {
+        } else if (interaction.targetMessage.author.id === interaction.member.id) {
             interaction.reply({ content: 'You cannot add your own message to the archives!', ephemeral: true }); // user cannot archive their own message
         } else {
             addToArchives(interaction.targetMessage, interaction.member.displayName);
-            interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.member.id}>'s message!`);
+            interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
         }        
     }
 
@@ -70,6 +70,21 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         addToArchives(reaction.message, `Maximum reacts of ${emojiStr}`);
     }
 })
+
+// async function buildModal() {
+//     const modal = new ModalBuilder()
+//         .setCustomId('archiveModal')
+//         .setTitle('Add to Archives');
+//     const archiveNameInput = new TextInputBuilder()
+//         .setCustomId('archiveName')
+//         .setLabel('Name the Archive Entry')
+//         .setStyle(TextInputStyle.Short);
+//     const firstActionRow = new ActionRowBuilder().addComponents(archiveNameInput);
+//     modal.addComponents(firstActionRow);
+
+//     const shownModal = await interaction.showModal(modal);
+//     return shownModal;
+// }
 
 async function fetchChannelMessages(channel, limit) {
     const messages = await channel.messages.fetch({ limit: 100 });
