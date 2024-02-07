@@ -74,6 +74,7 @@ client.on('messageCreate', (message) => {
 })
 
 function addToArchives(message, archiver) {
+    console.log(message.member);
     const embed = new EmbedBuilder()
         .setTitle('Archive Entry: #xx')
         .setDescription(message.content)
@@ -83,7 +84,7 @@ function addToArchives(message, archiver) {
         )
         .setTimestamp(message.createdTimestamp)
         .setColor(message.member.displayHexColor)
-        .setThumbnail(message.member.avatarURL())
+        .setThumbnail(message.member.user.avatarURL()) // avatarURL is a user attribute
     client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
     return;
 }
