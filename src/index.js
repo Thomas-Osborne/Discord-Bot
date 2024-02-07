@@ -62,7 +62,13 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 
     console.log(reaction.emoji);
     if (reaction.count == MAX_REACTS && !(reaction.message.author.bot)) {
-        addToArchives(reaction.message, `Maximum reacts of ${reaction.emoji.name}`);
+        let emojiStr;
+        if (reaction.emoji.id) {
+            emojiStr = `<:${reaction.emoji.name}:${reaction.emoji.id}>`;
+        } else {
+            emojiStr = reaction.emoji.name;
+        }
+        addToArchives(reaction.message, `Maximum reacts of ${emojiStr}`);
     }
 })
 
