@@ -157,10 +157,10 @@ async function addToArchives(message, archiver, title) {
                 if (lastMessage.content.length < 1600) {
                     lastMessage.edit(`${lastMessage.content}\n${stringToSend}`)
                 } else {
-                    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend);
+                    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend); // most recent message is too full
                 }
             } else {
-                client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend);
+                client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend); // no message in channel to edit
             }
         });
     return;
