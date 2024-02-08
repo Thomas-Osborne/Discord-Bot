@@ -135,6 +135,8 @@ async function addToArchives(message, archiver, title) {
     const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
+    console.log(member);
+
     const embed = new EmbedBuilder()
         .setColor(member.displayHexColor)
         .setTitle(title)
@@ -146,13 +148,13 @@ async function addToArchives(message, archiver, title) {
             {name: 'Channel', value: `${client.channels.cache.get(message.channelId).name}`}
         )
         .setTimestamp(message.createdTimestamp)
-        .setThumbnail(member.avatarURL() 
-            ? member.avatarURL() 
-            : member.defaultAvatarURL // show default avatar if no avatar exists
+        .setThumbnail(member.avatarURL() ?? member.user.avatarURL()
+            ? member.avatarURL() ?? member.user.avatarURL() // use in-server avatar if exists
+            : member.user.defaultAvatarURL // show default avatar if no avatar exists
         )
         
     archiveChannel.send({ embeds: [embed]});
-    
+
     const date = new Date(message.createdTimestamp);
     const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
 
