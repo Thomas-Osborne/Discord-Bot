@@ -20,11 +20,13 @@ const client = new Client({
 
 client.login(process.env.TOKEN);
 
+let archiveNameValue;
+
 client.on('ready', (c) => {
     console.log(`${c.user.username} is online!`);
 })
 
-client.on(Events.InteractionCreate, (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
     if (!(interaction.isChatInputCommand() || interaction.isMessageContextMenuCommand)) {
         return;
     }
@@ -35,12 +37,21 @@ client.on(Events.InteractionCreate, (interaction) => {
         } else if (interaction.targetMessage.author.id === interaction.member.id) {
             interaction.reply({ content: 'You cannot add your own message to the archives!', ephemeral: true }); // user cannot archive their own message
         } else {
-            // buildModal();
-            addToArchives(interaction.targetMessage, interaction.member.displayName);
-            interaction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+            const modal = buildModal();
+            await interaction.showModal(modal);
+
+            const filter = (interaction) => interaction.customId === "archiveModal";
+
+            interaction
+                .awaitModalSubmit( {filter, time: 30000} )
+                .then(async (modalInteraction) => {
+                    archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
+                    console.log(archiveNameValue);
+                    addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
+                    modalInteraction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+                })
         }        
     }
-
 })
 
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
@@ -71,24 +82,22 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         } else {
             emojiStr = reaction.emoji.name;
         }
-        addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`);
+        addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${emojiStr} ${wordPlusEr} ${emojiStr} from ${reaction.message.author.displayName}`);
         reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}`);
     }
 })
 
-async function buildModal() {
+function buildModal() {
     const modal = new ModalBuilder()
         .setCustomId('archiveModal')
         .setTitle('Add to Archives');
     const archiveNameInput = new TextInputBuilder()
-        .setCustomId('archiveName')
+        .setCustomId('archiveNameInput')
         .setLabel('Name the Archive Entry')
         .setStyle(TextInputStyle.Short);
     const firstActionRow = new ActionRowBuilder().addComponents(archiveNameInput);
     modal.addComponents(firstActionRow);
-
-    const shownModal = await interaction.showModal(modal);
-    return shownModal;
+    return modal;
 }
 
 async function fetchChannelMessages(channel, limit) {
@@ -96,10 +105,10 @@ async function fetchChannelMessages(channel, limit) {
     return messages;
 }
 
-function addToArchives(message, archiver) {
+async function addToArchives(message, archiver, title) {
     const channel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
 
-    const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`;
+    const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
     let truthVal = true;
     fetchChannelMessages(channel, 100)
@@ -112,19 +121,18 @@ function addToArchives(message, archiver) {
             }
             if (truthVal) {
                 const embed = new EmbedBuilder()
-                    .setColor(message.member.displayHexColor)
-                    .setTitle('Archive Entry: #xx')
+                    .setTitle(title)
                     .setURL(`http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`)
                     .setDescription(message.content)
                     .addFields(
-                        {name: 'Sent by', value: `${message.member.displayName}`, inline: true},
+                        {name: 'Sent by', value: `${message.author.displayName}`, inline: true},
                         {name: 'Archived by', value: `${archiver}`, inline: true},
                         {name: 'Channel', value: `${client.channels.cache.get(message.channelId).name}`}
                     )
                     .setTimestamp(message.createdTimestamp)
-                    .setThumbnail(message.member.user.avatarURL() 
-                        ? message.member.user.avatarURL() 
-                        : message.member.user.defaultAvatarURL // show default avatar if no avatar exists
+                    .setThumbnail(message.author.avatarURL() 
+                        ? message.author.avatarURL() 
+                        : message.author.defaultAvatarURL // show default avatar if no avatar exists
                     )
                     
                 client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
