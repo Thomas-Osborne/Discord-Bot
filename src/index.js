@@ -86,7 +86,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
             emojiStr = reaction.emoji.name;
         }
         if (await canArchive(reaction.message)) {
-            addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${emojiStr} ${wordPlusEr} ${emojiStr} from ${reaction.message.author.displayName}`);
+            addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${wordPlusEr} from ${reaction.message.author.displayName}`);
             reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}`);
         }
     }
