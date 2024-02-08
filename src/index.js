@@ -128,32 +128,35 @@ async function canArchive(message) {
 }
 
 async function addToArchives(message, archiver, title) {
-    const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
     const MAX_DESC_LENGTH = 300; // max number of characters to show in a description
+
+    const member = await message.guild.members.fetch(message.author.id); // need to be able to obtain guild member properties like name colour
+    const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
+
     const embed = new EmbedBuilder()
+        .setColor(member.displayHexColor)
         .setTitle(title)
         .setURL(url)
         .setDescription(message.content.length < MAX_DESC_LENGTH ? message.content : `${message.content.slice(0, MAX_DESC_LENGTH - 5)}...`)
         .addFields(
-            {name: 'Sent by', value: `${message.author.displayName}`, inline: true},
+            {name: 'Sent by', value: `${member.displayName}`, inline: true},
             {name: 'Archived by', value: `${archiver}`, inline: true},
             {name: 'Channel', value: `${client.channels.cache.get(message.channelId).name}`}
         )
         .setTimestamp(message.createdTimestamp)
-        .setThumbnail(message.author.avatarURL() 
-            ? message.author.avatarURL() 
-            : message.author.defaultAvatarURL // show default avatar if no avatar exists
+        .setThumbnail(member.avatarURL() 
+            ? member.avatarURL() 
+            : member.defaultAvatarURL // show default avatar if no avatar exists
         )
         
     client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
     const date = new Date(message.createdTimestamp);
-    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${message.author.displayName} — ${title}](${url})`;
+    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
     client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).messages
         .fetch({ limit: 1 })
         .then(messages => {
             if (messages.first()) {
                 let lastMessage = messages.first();
-                console.log(lastMessage.content.length);
                 if (lastMessage.content.length < 1600) {
                     lastMessage.edit(`${lastMessage.content}\n${stringToSend}`)
                 } else {
