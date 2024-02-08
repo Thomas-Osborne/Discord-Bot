@@ -75,6 +75,10 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 		}
     }
 
+    if (!(await canArchive(reaction.message))) {
+        return;
+    }
+
     // do not add a bot message to archives
     if (reaction.message.author.bot) {
         return;
@@ -114,10 +118,9 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         wordPlusEr = wordMax + "er";
     }
 
-    if (await canArchive(reaction.message)) {
-        const url = await addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${wordPlusEr} from ${reaction.message.author.displayName}`);
-        reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}\n\n_See the [archive entry](<${url}>)._`);
-    }
+    const url = await addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${wordPlusEr} from ${reaction.message.author.displayName}`);
+    reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}\n\n_See the [archive entry](<${url}>)._`);
+    
 })
 
 function buildModal(interaction) {
