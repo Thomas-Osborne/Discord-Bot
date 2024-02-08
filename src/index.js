@@ -129,11 +129,11 @@ async function canArchive(message) {
 
 async function addToArchives(message, archiver, title) {
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
-
+    const MAX_DESC_LENGTH = 300; // max number of characters to show in a description
     const embed = new EmbedBuilder()
         .setTitle(title)
         .setURL(url)
-        .setDescription(message.content)
+        .setDescription(message.content.length < MAX_DESC_LENGTH ? message.content : `${message.content.slice(0, MAX_DESC_LENGTH - 5)}...`)
         .addFields(
             {name: 'Sent by', value: `${message.author.displayName}`, inline: true},
             {name: 'Archived by', value: `${archiver}`, inline: true},
