@@ -41,13 +41,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
             await interaction.showModal(modal);
 
             const filter = (interaction) => interaction.customId === "archiveModal";
-
             interaction
                 .awaitModalSubmit( {filter, time: 30000} )
                 .then(async (modalInteraction) => {
                     archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
-                    addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
-                    interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+                    if (await canArchive(interaction.targetMessage)) {
+                        addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
+                        interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+                    } else {
+                        interaction.targetMessage.reply( { content: `<@${interaction.member.id}>, this message has already been added to the archives.`, ephemeral: true })
+                    }
                     modalInteraction.deferUpdate();
                 })
         }        
@@ -82,8 +85,10 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
         } else {
             emojiStr = reaction.emoji.name;
         }
-        addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${emojiStr} ${wordPlusEr} ${emojiStr} from ${reaction.message.author.displayName}`);
-        reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}`);
+        if (await canArchive(reaction.message)) {
+            addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${emojiStr} ${wordPlusEr} ${emojiStr} from ${reaction.message.author.displayName}`);
+            reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}`);
+        }
     }
 })
 
@@ -105,13 +110,12 @@ async function fetchChannelMessages(channel, limit) {
     return messages;
 }
 
-async function addToArchives(message, archiver, title) {
+async function canArchive(message) {
+    let truthVal = true;
     const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
-
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
-    let truthVal = true;
-    fetchChannelMessages(archiveChannel, 100)
+    await fetchChannelMessages(archiveChannel, 100)
         .then(messages => {
             for (const message of messages) {
                 if (message[1].embeds[0].url === url) { // SHOULD IMPROVE -- NOT ROBUST AT ALL!
@@ -119,7 +123,25 @@ async function addToArchives(message, archiver, title) {
                     break;
                 }
             }
-            if (truthVal) {
+        })
+    return truthVal;
+}
+
+async function addToArchives(message, archiver, title) {
+    const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
+
+    const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
+
+    // let truthVal = true;
+    // fetchChannelMessages(archiveChannel, 100)
+    //     .then(messages => {
+    //         for (const message of messages) {
+    //             if (message[1].embeds[0].url === url) { // SHOULD IMPROVE -- NOT ROBUST AT ALL!
+    //                 truthVal = false;
+    //                 break;
+    //             }
+    //         }
+    //         if (truthVal) {
                 const embed = new EmbedBuilder()
                     .setTitle(title)
                     .setURL(`http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`)
@@ -136,7 +158,6 @@ async function addToArchives(message, archiver, title) {
                     )
                     
                 client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
-                console.log(embed);
                 const date = new Date(message.createdTimestamp);
                 const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${message.author.displayName} — ${title}](http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id})`;
                 client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).messages
@@ -154,9 +175,9 @@ async function addToArchives(message, archiver, title) {
                             client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend);
                         }
                     });
-            }
-        }
-    ) 
+    //         }
+    // //     }
+    // // ) 
 
     return;
 }
