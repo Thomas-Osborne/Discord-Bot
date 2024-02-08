@@ -106,12 +106,12 @@ async function fetchChannelMessages(channel, limit) {
 }
 
 async function addToArchives(message, archiver, title) {
-    const channel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
+    const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
 
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
     let truthVal = true;
-    fetchChannelMessages(channel, 100)
+    fetchChannelMessages(archiveChannel, 100)
         .then(messages => {
             for (const message of messages) {
                 if (message[1].embeds[0].url === url) { // SHOULD IMPROVE -- NOT ROBUST AT ALL!
@@ -136,6 +136,24 @@ async function addToArchives(message, archiver, title) {
                     )
                     
                 client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+                console.log(embed);
+                const date = new Date(message.createdTimestamp);
+                const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${message.author.displayName} — ${title}](http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id})`;
+                client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).messages
+                    .fetch({ limit: 1 })
+                    .then(messages => {
+                        if (messages.first()) {
+                            let lastMessage = messages.first();
+                            console.log(lastMessage.content.length);
+                            if (lastMessage.content.length < 1600) {
+                                lastMessage.edit(`${lastMessage.content}\n${stringToSend}`)
+                            } else {
+                                client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend);
+                            }
+                        } else {
+                            client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend);
+                        }
+                    });
             }
         }
     ) 
