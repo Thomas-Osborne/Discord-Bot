@@ -66,14 +66,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     const MAX_REACTS = 1;
     const wordMax = numberToWords.toWords(MAX_REACTS);
 
-    let wordPlusEr;
-    // make comparative version of the word
-    if (wordMax.slice(-1) === 'e') {
-        wordPlusEr = wordMax + 'r'; // only add r if the last letter of the number as a word is an e
-    } else {
-        wordPlusEr = wordMax + "er";
-    }
-
     if (reaction.partial) {
         try {
 			await reaction.fetch();
@@ -83,17 +75,48 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 		}
     }
 
-    if (reaction.count == MAX_REACTS && !(reaction.message.author.bot)) {
-        let emojiStr;
-        if (reaction.emoji.id) {
-            emojiStr = `<:${reaction.emoji.name}:${reaction.emoji.id}>`;
-        } else {
-            emojiStr = reaction.emoji.name;
-        }
-        if (await canArchive(reaction.message)) {
-            const url = await addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${wordPlusEr} from ${reaction.message.author.displayName}`);
-            reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}\n\n_See the [archive entry](<${url}>)._`);
-        }
+    // do not add a bot message to archives
+    if (reaction.message.author.bot) {
+        return;
+    }
+
+    // do not add to archives if not at required react threshold
+    if (reaction.count < MAX_REACTS) {
+        return;
+    }
+
+    // do not add to archives if react threshold is obtained exactly but someone has self-reacted
+    if (reaction.count === MAX_REACTS) {
+        const allReactUserIds = (await reaction.users.fetch()).keys();
+        const originalAuthorId = reaction.message.author.id;
+        console.log(allReactUserIds);
+        for (const id of allReactUserIds) {
+            if (id === originalAuthorId) {
+                return;
+            }
+        };
+    }
+
+    // if pass all conditions then can archive message
+
+    let emojiStr;
+    if (reaction.emoji.id) {
+        emojiStr = `<:${reaction.emoji.name}:${reaction.emoji.id}>`;
+    } else {
+        emojiStr = reaction.emoji.name;
+    }
+
+    let wordPlusEr;
+    // make comparative version of the word
+    if (wordMax.slice(-1) === 'e') {
+        wordPlusEr = wordMax + 'r'; // only add r if the last letter of the number as a word is an e
+    } else {
+        wordPlusEr = wordMax + "er";
+    }
+
+    if (await canArchive(reaction.message)) {
+        const url = await addToArchives(reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, `A ${wordPlusEr} from ${reaction.message.author.displayName}`);
+        reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}\n\n_See the [archive entry](<${url}>)._`);
     }
 })
 
