@@ -47,7 +47,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
                     archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
                     if (await canArchive(interaction.targetMessage)) {
                         const url = await addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
-                        interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!\nSee the [archive entry](${url}).`);
+                        interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!\n\n_See the [archive entry](<${url}>)._`);
                     } else {
                         interaction.targetMessage.reply( { content: `<@${interaction.member.id}>, this message has already been added to the archives.`, ephemeral: true })
                     }
