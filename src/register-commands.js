@@ -1,9 +1,13 @@
 require('dotenv').config();
-const { REST, Routes, ContextMenuCommandBuilder, SlashCommandBuilder, ApplicationCommandType } = require('discord.js');
+const { REST, Routes, ContextMenuCommandBuilder, ApplicationCommandType } = require('discord.js');
 
 const commands = [
     new ContextMenuCommandBuilder()
         .setName('Add to Archives')
+        .setType(ApplicationCommandType.Message),
+    
+    new ContextMenuCommandBuilder()
+        .setName('Context Ping!')
         .setType(ApplicationCommandType.Message),
 ];
 

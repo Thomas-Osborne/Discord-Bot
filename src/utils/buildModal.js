@@ -1,4 +1,4 @@
-const { Client, ModalBuilder } = require('discord.js');
+const { Client, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 
 /**
  * @param {Client} client
@@ -14,6 +14,7 @@ module.exports = async (client) => {
             .setStyle(TextInputStyle.Short);
         const firstActionRow = new ActionRowBuilder().addComponents(archiveNameInput);
         modal.addComponents(firstActionRow);
+        console.log(firstActionRow);
         return modal;
     } catch (error) {
         console.error(`Error building modal: ${error}`);

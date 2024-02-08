@@ -1,5 +1,8 @@
 require('dotenv').config();
-const eventHandler = require('./handlers/eventHandler')
+const eventHandler = require('./handlers/eventHandler');
+const addToArchivesContextMenu = require('./context-menu-commands/archives/AddToArchives.js');
+const pingContextMenu = require('./context-menu-commands/misc/contextPing.js');
+
 
 const { Client, Events, IntentsBitField, Partials, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 
@@ -22,11 +25,21 @@ client.login(process.env.TOKEN);
 
 eventHandler(client);
 
-// let archiveNameValue;
+client.on(Events.InteractionCreate, async (interaction) => {
+    if (!(interaction.isMessageContextMenuCommand)) {
+        return;
+    }
 
-// client.on('ready', (c) => {
-//     console.log(`${c.user.username} is online!`);
-// })
+    if (interaction.commandName === 'Add to Archives') {
+        addToArchivesContextMenu(client, interaction);
+    }
+    
+    if (interaction.commandName === 'Context Ping!') {
+        pingContextMenu(client, interaction);
+    }
+
+});
+// let archiveNameValue;
 
 // client.on(Events.InteractionCreate, async (interaction) => {
 //     if (!(interaction.isChatInputCommand() || interaction.isMessageContextMenuCommand)) {
