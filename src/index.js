@@ -121,7 +121,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     
 })
 
-function buildModal(interaction) {
+function buildModal() {
     const modal = new ModalBuilder()
         .setCustomId(`archiveModal`)
         .setTitle('Add to Archives');
@@ -141,18 +141,19 @@ async function fetchChannelMessages(channel, limit) {
 
 async function canArchive(message) {
     let truthVal = true;
-    const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
-    await fetchChannelMessages(archiveChannel, 100)
+    const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
+    await fetchChannelMessages(archiveListChannel, 100)
         .then(messages => {
             for (const message of messages) {
-                if (message[1].embeds[0].url === url) { // SHOULD IMPROVE -- NOT ROBUST AT ALL!
+                if (message[1].content.includes(url)) {
                     truthVal = false;
                     break;
                 }
             }
         })
+
     return truthVal;
 }
 
@@ -184,7 +185,7 @@ async function addToArchives(message, archiver, title) {
     const embedUrl = await sentEmbed.url;
 
     const date = new Date(message.createdTimestamp);
-    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${embedUrl})`;
+    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
 
     archiveListChannel.messages
         .fetch({ limit: 1 })

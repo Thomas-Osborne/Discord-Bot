@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { REST, Routes, ContextMenuCommandBuilder, ApplicationCommandType } = require('discord.js');
+const { REST, Routes, ContextMenuCommandBuilder, SlashCommandBuilder, ApplicationCommandType } = require('discord.js');
 
 const commands = [
     new ContextMenuCommandBuilder()
