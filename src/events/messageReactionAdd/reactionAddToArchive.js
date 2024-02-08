@@ -9,7 +9,7 @@ const addToArchives = require('../../utils/addToArchives');
  * @param {MessageReaction} reaction
  * @param {User} user
  */
-module.exports = async (client, reaction, message) => {
+module.exports = async (client, reaction, user) => {
     try {
         const MAX_REACTS = 1;
         const wordMax = numberToWords.toWords(MAX_REACTS);
