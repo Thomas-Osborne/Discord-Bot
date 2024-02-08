@@ -46,8 +46,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 .then(async (modalInteraction) => {
                     archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
                     if (await canArchive(interaction.targetMessage)) {
-                        addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
-                        interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+                        const url = await addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
+                        interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!\nSee the [archive entry](${url}).`);
                     } else {
                         interaction.targetMessage.reply( { content: `<@${interaction.member.id}>, this message has already been added to the archives.`, ephemeral: true })
                     }
@@ -135,8 +135,6 @@ async function addToArchives(message, archiver, title) {
     const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
-    console.log(member);
-
     const embed = new EmbedBuilder()
         .setColor(member.displayHexColor)
         .setTitle(title)
@@ -153,10 +151,14 @@ async function addToArchives(message, archiver, title) {
             : member.user.defaultAvatarURL // show default avatar if no avatar exists
         )
         
-    archiveChannel.send({ embeds: [embed]});
+    const sentEmbed = await archiveChannel.send({ embeds: [embed]});
+    const embedUrl = await sentEmbed.url;
+
+    console.log(sentEmbed);
+    console.log(embedUrl);
 
     const date = new Date(message.createdTimestamp);
-    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
+    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${embedUrl})`;
 
     archiveListChannel.messages
         .fetch({ limit: 1 })
@@ -172,5 +174,6 @@ async function addToArchives(message, archiver, title) {
                 archiveListChannel.send(stringToSend); // no message in channel to edit
             }
         });
-    return;
+
+    return embedUrl;
 }
