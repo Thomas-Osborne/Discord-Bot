@@ -122,7 +122,10 @@ function addToArchives(message, archiver) {
                         {name: 'Channel', value: `${client.channels.cache.get(message.channelId).name}`}
                     )
                     .setTimestamp(message.createdTimestamp)
-                    .setThumbnail(message.member.user.avatarURL()) // avatarURL is a user attribute
+                    .setThumbnail(message.member.user.avatarURL() 
+                        ? message.member.user.avatarURL() 
+                        : message.member.user.defaultAvatarURL // show default avatar if no avatar exists
+                    )
                     
                 client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
             }
