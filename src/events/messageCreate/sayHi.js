@@ -11,6 +11,6 @@ module.exports = (client, message) => {
             message.reply('Hi there!');
         }
     } catch (error) {
-        console.log(`Error saying hi: ${error}`);
+        console.error(`Error saying hi: ${error}`);
     }
 }

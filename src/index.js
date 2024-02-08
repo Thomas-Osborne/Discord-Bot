@@ -1,9 +1,7 @@
 require('dotenv').config();
 const eventHandler = require('./handlers/eventHandler')
-const numberToWords = require('number-to-words'); // changes number into word form
 
-
-const { Client, Events, IntentsBitField, Partials, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
+const { Client, Events, IntentsBitField, Partials, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 
 const client = new Client({
     intents: [
