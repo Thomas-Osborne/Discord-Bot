@@ -1,7 +1,7 @@
 const { Client, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 const addToArchives = require('../../utils/addToArchives');
 const canArchive = require('../../utils/canArchive');
-const buildModal = require('../../utils/buildModal');
+const buildModal = require('../../utils/buildModal'); // TODO
 
 /**
  * @param {Client} client

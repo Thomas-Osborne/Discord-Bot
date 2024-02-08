@@ -33,20 +33,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.commandName === 'Add to Archives') {
         addToArchivesContextMenu(client, interaction);
     }
-    
+
     if (interaction.commandName === 'Context Ping!') {
         pingContextMenu(client, interaction);
     }
 
 });
-// let archiveNameValue;
+
 
 // client.on(Events.InteractionCreate, async (interaction) => {
-//     if (!(interaction.isChatInputCommand() || interaction.isMessageContextMenuCommand)) {
-//         return;
-//     }
-
-//     if (interaction.commandName === 'Add to Archives') {
 //         if (interaction.targetMessage.author.bot) {
 //             interaction.reply({ content: 'You cannot add a bot message to the archives.', ephemeral: true }); // cannot archive a bot message
 //         } else if (interaction.targetMessage.author.id === interaction.member.id) {
@@ -55,26 +50,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 //             const modal = buildModal(interaction);
 //             await interaction.showModal(modal);
 
-//             const filter = (interaction) => interaction.customId === 'archiveModal';
-
-//             interaction
-//                 .awaitModalSubmit( {filter, time: 15_000} )
-//                 .then(async (modalInteraction) => {
-//                     archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
-//                     if (await canArchive(interaction.targetMessage)) {
-//                         const url = await addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
-//                         interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!\n\n_See the [archive entry](<${url}>)._`);
-//                     } else {
-//                         interaction.targetMessage.reply( { content: `<@${interaction.member.id}>, this message has already been added to the archives.`, ephemeral: true })
-//                     }
-//                     modalInteraction.deferUpdate();
-//                 })
-//                 .catch(error => {
-//                     console.log(`Error: ${error}`);
-//                 })
-//         }        
-//     }
-// })
 
 
 // function buildModal() {
