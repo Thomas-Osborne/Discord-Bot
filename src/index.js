@@ -131,6 +131,8 @@ async function addToArchives(message, archiver, title) {
     const MAX_DESC_LENGTH = 300; // max number of characters to show in a description
 
     const member = await message.guild.members.fetch(message.author.id); // need to be able to obtain guild member properties like name colour
+    const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
+    const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
     const embed = new EmbedBuilder()
@@ -149,10 +151,12 @@ async function addToArchives(message, archiver, title) {
             : member.defaultAvatarURL // show default avatar if no avatar exists
         )
         
-    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID).send({ embeds: [embed]});
+    archiveChannel.send({ embeds: [embed]});
+    
     const date = new Date(message.createdTimestamp);
     const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
-    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).messages
+
+    archiveListChannel.messages
         .fetch({ limit: 1 })
         .then(messages => {
             if (messages.first()) {
@@ -160,10 +164,10 @@ async function addToArchives(message, archiver, title) {
                 if (lastMessage.content.length < 1600) {
                     lastMessage.edit(`${lastMessage.content}\n${stringToSend}`)
                 } else {
-                    client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend); // most recent message is too full
+                    archiveListChannel.send(stringToSend); // most recent message is too full
                 }
             } else {
-                client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID).send(stringToSend); // no message in channel to edit
+                archiveListChannel.send(stringToSend); // no message in channel to edit
             }
         });
     return;
