@@ -38,7 +38,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
             interaction.reply({ content: 'You cannot add your own message to the archives!', ephemeral: true }); // user cannot archive their own message
         } else {
             const modal = buildModal(interaction);
-            console.log(interaction.id);
             await interaction.showModal(modal);
 
             const filter = (interaction) => interaction.customId === 'archiveModal';
@@ -93,7 +92,6 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     if (reaction.count === MAX_REACTS) {
         const allReactUserIds = (await reaction.users.fetch()).keys();
         const originalAuthorId = reaction.message.author.id;
-        console.log(allReactUserIds);
         for (const id of allReactUserIds) {
             if (id === originalAuthorId) {
                 return;
