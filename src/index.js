@@ -46,9 +46,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 .awaitModalSubmit( {filter, time: 30000} )
                 .then(async (modalInteraction) => {
                     archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
-                    console.log(archiveNameValue);
                     addToArchives(interaction.targetMessage, interaction.member.displayName, archiveNameValue);
-                    modalInteraction.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+                    interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!`);
+                    modalInteraction.deferUpdate();
                 })
         }        
     }
