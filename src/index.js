@@ -37,12 +37,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
         } else if (interaction.targetMessage.author.id === interaction.member.id) {
             interaction.reply({ content: 'You cannot add your own message to the archives!', ephemeral: true }); // user cannot archive their own message
         } else {
-            const modal = buildModal();
+            const modal = buildModal(interaction);
+            console.log(interaction.id);
             await interaction.showModal(modal);
 
-            const filter = (interaction) => interaction.customId === "archiveModal";
+            const filter = (interaction) => interaction.customId === 'archiveModal';
+
             interaction
-                .awaitModalSubmit( {filter, time: 30000} )
+                .awaitModalSubmit( {filter, time: 15_000} )
                 .then(async (modalInteraction) => {
                     archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
                     if (await canArchive(interaction.targetMessage)) {
@@ -52,6 +54,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
                         interaction.targetMessage.reply( { content: `<@${interaction.member.id}>, this message has already been added to the archives.`, ephemeral: true })
                     }
                     modalInteraction.deferUpdate();
+                })
+                .catch(error => {
+                    console.log(`Error: ${error}`);
                 })
         }        
     }
@@ -92,9 +97,9 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     }
 })
 
-function buildModal() {
+function buildModal(interaction) {
     const modal = new ModalBuilder()
-        .setCustomId('archiveModal')
+        .setCustomId(`archiveModal`)
         .setTitle('Add to Archives');
     const archiveNameInput = new TextInputBuilder()
         .setCustomId('archiveNameInput')
@@ -153,9 +158,6 @@ async function addToArchives(message, archiver, title) {
         
     const sentEmbed = await archiveChannel.send({ embeds: [embed]});
     const embedUrl = await sentEmbed.url;
-
-    console.log(sentEmbed);
-    console.log(embedUrl);
 
     const date = new Date(message.createdTimestamp);
     const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${embedUrl})`;
