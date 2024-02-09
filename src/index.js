@@ -1,10 +1,13 @@
 require('dotenv').config();
+
+const { Client, Events, IntentsBitField, Partials, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
+
+const mongoose = require('mongoose');
+
 const eventHandler = require('./handlers/eventHandler');
 const addToArchivesContextMenu = require('./context-menu-commands/archives/AddToArchives.js');
 const pingContextMenu = require('./context-menu-commands/misc/contextPing.js');
 
-
-const { Client, Events, IntentsBitField, Partials, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -21,7 +24,17 @@ const client = new Client({
     ]
 });
 
-eventHandler(client);
+(async () => {
+    try {
+        mongoose.set('strictQuery', false);
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("Connected to DB");
+
+        eventHandler(client);
+    } catch (error) {
+        console.error(`Error connecting to DB: ${error}`);
+    }
+})();
 
 client.login(process.env.TOKEN);
 
