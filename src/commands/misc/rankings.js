@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const Reaction = require('../../models/Reaction');
 const unwrapEmojiName = require('../../utils/unwrapEmojiName');
 
@@ -6,24 +6,34 @@ module.exports = {
     name: 'rankings',
     description: 'Show which emojis have got used the most.',
     devOnly: true,
+    options: [
+        {
+            name: 'user',
+            description: 'The user to find out their most received used reaction.',
+            type: ApplicationCommandOptionType.Mentionable,
+        },
+    ],
 
     callback: async (client, interaction) => {
-        const data = await Reaction.find({});
         
+        let data;
+        if (interaction.options.get('user')) {
+            const userId = interaction.options.get('user').value;
+            data = await Reaction.find({authorId: userId});
+        } else {
+            data = await Reaction.find({});
+        }
+
         let rankedReactions = [];
 
         for (const item of data) {
-            console.log(item.name);
-            console.log(item.reactionId);
             if (!(rankedReactions.map(reaction => reaction.name).includes((item.name)))) {
                 rankedReactions.push({reactionId: item.reactionId, name: item.name, total: 0});
             }
         }
 
         for (const reaction of rankedReactions) {
-            console.log(reaction.name);
             reaction.total = await Reaction.find({name: reaction.name}).count();
-            console.log(reaction.total);
         }
 
         rankedReactions = rankedReactions
