@@ -12,10 +12,30 @@ const reactionSchema = new Schema({
         type: String,
         required: true,
     },
-    count: {
-        type: Number,
-        default: 0,
-    }
+    messageId: {
+        type: String,
+        required: true,
+    },
+    channelId: {
+        type: String,
+        required: true,
+    },
+    authorId: {
+        type: String,
+        required: true,
+    },
+    authorIsBot: {
+        type: Boolean,
+        required: true,
+    },
+    // reacterId: {
+    //     type: String,
+    //     requried: true,
+    // },
+    // selfReact: {
+    //     type: Boolean,
+    //     required: true,
+    // },
 })
 
 module.exports = model('Reaction', reactionSchema);
