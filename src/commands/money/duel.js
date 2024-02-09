@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType } = require('discord.js');
-const Wealth = require('../../models/Wealth');
+const User = require('../../models/User');
 
 module.exports = {
     name: 'duel',
@@ -30,7 +30,7 @@ module.exports = {
         
         const target = interaction.options.get('target-user').member; // useful to have the object as a guild member
         
-        const queryUser = {
+        const queryTargeter = {
             userId: interaction.user.id,
             guildId: interaction.guild.id,
         }
@@ -41,53 +41,53 @@ module.exports = {
         }
 
         try {
-            const userWealth = await Wealth.findOne(queryUser);
-            const targetWealth = await Wealth.findOne(queryTarget);
+            const targeterUser = await User.findOne(queryTargeter);
+            const targetUser = await User.findOne(queryTarget);
             
-            if (!userWealth || !targetWealth) {
-                if (!userWealth) {
-                    const newWealth = new Wealth({
+            if (!targeterUser || !targetUser) {
+                if (!targeterUser) {
+                    const newUser = new User({
                         userId: interaction.user.id,
                         guildId: interaction.guild.id,
                     })
-                    await newWealth.save();
+                    await newUser.save();
                 }
 
-                if (!targetWealth) {
-                    const newWealth = new Wealth({
+                if (!targetUser) {
+                    const newUser = new User({
                         userId: target.id,
                         guildId: interaction.guild.id,
                     })
-                    await newWealth.save();
+                    await newUser.save();
                 }
 
                 interaction.reply({ content: "Someone didn't have a bank account!", ephemeral: true });
                 return;
             }
 
-            if (userWealth.money < amount) {
+            if (targeterUser.money < amount) {
                 interaction.reply({ content: "You don't have enough funds!", ephemeral: true });
-            } else if (targetWealth.money < amount) {
+            } else if (targetUser.money < amount) {
                 interaction.reply({ content: "They don't have enough funds!", ephemeral: true });
             } else {
                 if (Math.random() < 0.5) {
                     // user wins
-                    userWealth.money += amount;
-                    await userWealth.save()
+                    targeterUser.money += amount;
+                    await targeterUser.save()
                         .catch(error => console.error(`Error saving new moneys: ${error}`));
-                    targetWealth.money -= amount;
-                        await targetWealth.save()
+                    targetUser.money -= amount;
+                        await targetUser.save()
                             .catch(error => console.error(`Error saving new moneys: ${error}`));
                     interaction.reply(`<@${interaction.member.id}> you win against <@${target.id}>! You double your wager to £${2 * amount}.`);
                 } else {
                     // user loses
-                    targetWealth.money += amount;
-                    await targetWealth.save()
+                    targetUser.money += amount;
+                    await targetUser.save()
                         .catch(error => console.error(`Error saving new moneys: ${error}`));
-                    userWealth.money -= amount;
-                        await userWealth.save()
+                    targeterUser.money -= amount;
+                        await targeterUser.save()
                             .catch(error => console.error(`Error saving new moneys: ${error}`));
-                    interaction.reply(`<@${interaction.member.id}> you win against <@${target.id}>! You lose your £${amount}.`);
+                    interaction.reply(`<@${interaction.member.id}> you lose against <@${target.id}>! You lose your £${amount}.`);
                 }
             }
         } catch (error) {

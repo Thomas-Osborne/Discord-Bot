@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType } = require('discord.js');
-const Wealth = require('../../models/Wealth');
+const User = require('../../models/User');
 
 module.exports = {
     name: 'gift',
@@ -36,23 +36,22 @@ module.exports = {
         }
 
         try {
-            const wealth = await Wealth.findOne(query);
-            console.log(wealth);
+            const user = await User.findOne(query);
             
-            if (wealth) {
-                wealth.money += amount;
-                await wealth.save()
+            if (user) {
+                user.money += amount;
+                await user.save()
                     .catch(error => console.error(`Error saving new moneys: ${error}`));
             } else {
-                const newWealth = new Wealth({
+                const newUser = new User({
                     userId: target.id,
                     guildId: target.guild.id,
                     money: amount,
                 })
-                await newWealth.save()
-                    .catch(error => console.error(`Error creating new wealth entry ${error}`));
+                await newUser.save()
+                    .catch(error => console.error(`Error creating new user entry ${error}`));
             }
-            interaction.reply(`Sent <@${target.id}> £${amount}! They now have £${wealth.money}.`);
+            interaction.reply(`Sent <@${target.id}> £${amount}! They now have £${user.money}.`);
         } catch (error) {
             console.error(`Error giving money: ${error}`)
         }

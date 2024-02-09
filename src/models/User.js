@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const wealthSchema = new Schema({
+const userSchema = new Schema({
     userId: {
         type: String,
         required: true,
@@ -15,4 +15,4 @@ const wealthSchema = new Schema({
     }
 })
 
-module.exports = model('Wealth', wealthSchema);
+module.exports = model('User', userSchema);
