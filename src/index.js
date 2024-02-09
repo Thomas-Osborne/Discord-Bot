@@ -31,12 +31,11 @@ const client = new Client({
         console.log("Connected to DB");
 
         eventHandler(client);
+        client.login(process.env.TOKEN);
     } catch (error) {
         console.error(`Error connecting to DB: ${error}`);
     }
 })();
-
-client.login(process.env.TOKEN);
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!(interaction.isMessageContextMenuCommand)) {
