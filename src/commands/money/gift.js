@@ -1,4 +1,5 @@
 const { ApplicationCommandOptionType } = require('discord.js');
+const Wealth = require('../../models/Wealth');
 
 module.exports = {
     name: 'gift',
@@ -19,11 +20,41 @@ module.exports = {
         },
     ],
 
-    callback: (client, interaction) => {
+    callback: async (client, interaction) => {
 
         const amount = interaction.options.get('amount').value;
         const target = interaction.options.get('target-user').member; // useful to have the object as a guild member
 
+        console.log(target);
+
+        const query = {
+            userId: target.id,
+            guildId: target.guild.id,
+        }
+
+        try {
+            const wealth = await Wealth.findOne(query);
+            console.log(wealth);
+            
+            if (wealth) {
+                wealth.money += amount;
+                await wealth.save()
+                    .then(console.log("Saved!"))
+                    .catch(error => console.error(`Error saving new moneys: ${error}`));
+            } else {
+                const newWealth = new Wealth({
+                    userId: target.id,
+                    guildId: target.guild.id,
+                    money: amount,
+                })
+                await newWealth.save()
+                    .then(console.log("Saved!"))
+                    .catch(error => console.error(`Error creating new wealth entry ${error}`));
+            }
+            interaction.reply(`Sent <@${target.id}> £${amount}! You now have ${wealth.money}`);
+        } catch (error) {
+            console.error(`Error giving money: ${error}`)
+        }
 
     }
 }
