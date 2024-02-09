@@ -22,6 +22,11 @@ module.exports = {
     callback: async (client, interaction) => {
 
         const amount = interaction.options.get('amount').value;
+
+        if (amount <= 0 || !Number.isInteger(amount)) {
+            interaction.reply({ content: "The amount must be a positive integer.", ephemeral: true })
+            return;
+        }
         const target = interaction.options.get('target-user').member; // useful to have the object as a guild member
         
         const queryUser = {
@@ -38,31 +43,31 @@ module.exports = {
             const userWealth = await Wealth.findOne(queryUser);
             const targetWealth = await Wealth.findOne(queryTarget);
             
-            if (!userWealth) {
-                const newWealth = new Wealth({
-                    userId: interaction.user.id,
-                    guildId: interaction.guild.id,
-                })
-                await newWealth.save()
-                    .then(interaction.reply("They don't have enough funds!"))
-                    .catch(error => console.error(`Error creating new wealth entry ${error}`));
-            }
+            if (!userWealth || !targetWealth) {
+                if (!userWealth) {
+                    const newWealth = new Wealth({
+                        userId: interaction.user.id,
+                        guildId: interaction.guild.id,
+                    })
+                    await newWealth.save();
+                }
 
-            if (!targetWealth) {
-                const newWealth = new Wealth({
-                    userId: target.id,
-                    guildId: interaction.guild.id,
-                })
-                await newWealth.save()
-                    .then(
-                        interaction.reply("They don't have enough funds!"))
-                    .catch(error => console.error(`Error creating new wealth entry ${error}`));
+                if (!targetWealth) {
+                    const newWealth = new Wealth({
+                        userId: target.id,
+                        guildId: interaction.guild.id,
+                    })
+                    await newWealth.save();
+                }
+
+                interaction.reply({ content: "Someone didn't have a bank account!", ephemeral: true });
+                return;
             }
 
             if (userWealth.money < amount) {
-                interaction.reply("You don't have enough funds!");
+                interaction.reply({ content: "You don't have enough funds!", ephemeral: true });
             } else if (targetWealth.money < amount) {
-                interaction.reply("They don't have enough funds!");
+                interaction.reply({ content: "They don't have enough funds!", ephemeral: true });
             } else {
                 if (Math.random() < 0.5) {
                     // user wins
