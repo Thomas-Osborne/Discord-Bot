@@ -1,5 +1,5 @@
 const { Client, MessageReaction, User } = require('discord.js');
-const unwrapEmojiName = require('../../utils/unwrapEmojiName');
+const Reaction = require('../../models/Reaction');
 
 /**
  *
@@ -18,9 +18,35 @@ module.exports = async (client, reaction, user) => {
             }
         }
 
-        const emojiStr = unwrapEmojiName(reaction.emoji.id, reaction.emoji.name);
+        // do not include reacts to bots in the count
+        if (reaction.message.author.bot) {
+            return;
+        }
 
-        reaction.message.reply(emojiStr);
+        const query = {
+            reactionId: reaction.emoji.id,
+            name: reaction.emoji.name,
+            guildId: reaction.message.guildId,
+        }
+
+        const react = await Reaction.findOne(query);
+            
+            if (react) {
+                react.count += 1;
+                await react.save()
+                    .catch(error => console.error(`Error saving new moneys: ${error}`));
+            } else {
+                const newReact = new Reaction({
+                    reactionId: reaction.emoji.id,
+                    name: reaction.emoji.name,
+                    guildId: reaction.message.guildId,
+                    count: 1
+                })
+                await newReact.save()
+                    .catch(error => console.error(`Error creating new reaction entry ${error}`));
+            }
+
+        return;
 
     } catch (error) {
         console.error(`Error increasing reaction count: ${error}`)

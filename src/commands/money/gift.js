@@ -42,7 +42,6 @@ module.exports = {
             if (wealth) {
                 wealth.money += amount;
                 await wealth.save()
-                    .then(console.log("Saved!"))
                     .catch(error => console.error(`Error saving new moneys: ${error}`));
             } else {
                 const newWealth = new Wealth({
@@ -51,7 +50,6 @@ module.exports = {
                     money: amount,
                 })
                 await newWealth.save()
-                    .then(console.log("Saved!"))
                     .catch(error => console.error(`Error creating new wealth entry ${error}`));
             }
             interaction.reply(`Sent <@${target.id}> £${amount}! They now have £${wealth.money}.`);
