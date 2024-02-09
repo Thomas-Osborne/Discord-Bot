@@ -51,7 +51,7 @@ module.exports = {
                     .then(console.log("Saved!"))
                     .catch(error => console.error(`Error creating new wealth entry ${error}`));
             }
-            interaction.reply(`Sent <@${target.id}> £${amount}! You now have £${wealth.money}`);
+            interaction.reply(`Sent <@${target.id}> £${amount}! They now have £${wealth.money}.`);
         } catch (error) {
             console.error(`Error giving money: ${error}`)
         }
