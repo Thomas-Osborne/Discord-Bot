@@ -9,7 +9,6 @@ const buildModal = require('../../utils/buildModal'); // TODO
  */
 module.exports = async (client, interaction) => {
     try {
-        let archiveNameValue;
         if (interaction.targetMessage.author.bot) {
             interaction.reply({ content: 'You cannot add a bot message to the archives.', ephemeral: true }); // cannot archive a bot message
         } else if (interaction.targetMessage.author.id === interaction.member.id) {
@@ -23,7 +22,7 @@ module.exports = async (client, interaction) => {
             interaction
                 .awaitModalSubmit( {filter, time: 15_000} )
                 .then(async (modalInteraction) => {
-                    archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
+                    let archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
                     if (await canArchive(client, interaction.targetMessage)) {
                         const url = await addToArchives(client, interaction.targetMessage, interaction.member.displayName, archiveNameValue);
                         interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!\n\n_See the [archive entry](<${url}>)._`);
