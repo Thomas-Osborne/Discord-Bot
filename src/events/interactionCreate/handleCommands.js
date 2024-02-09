@@ -5,11 +5,14 @@ module.exports = async (client, interaction) => {
     if (!interaction.isChatInputCommand()) {
         return;
     }
+    
+    console.log("hello");
 
     const localCommands = getLocalCommands();
 
     try {
         const commandObject = localCommands.find(command => command.name === interaction.commandName);
+
 
         if (!commandObject) {
             return;

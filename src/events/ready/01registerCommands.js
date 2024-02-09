@@ -32,7 +32,7 @@ module.exports = async (client) => {
             } else {
                 // do not register a command with deleted set to true
                 if (localCommand.deleted) {
-                    console.log(`Skipping registering command ${name} as it is set to delete.`);
+                    console.log(`Skipping registering command "${name}" as it is set to delete.`);
                     continue;
                 }
 

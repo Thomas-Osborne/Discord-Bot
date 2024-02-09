@@ -21,9 +21,9 @@ const client = new Client({
     ]
 });
 
-client.login(process.env.TOKEN);
-
 eventHandler(client);
+
+client.login(process.env.TOKEN);
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!(interaction.isMessageContextMenuCommand)) {
