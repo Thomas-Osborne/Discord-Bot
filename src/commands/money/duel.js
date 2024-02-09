@@ -67,8 +67,8 @@ module.exports = {
 
             if (targeterUser.money < amount) {
                 interaction.reply({ content: "You don't have enough funds!", ephemeral: true });
-            } else if (targetUser.money < amount) {
-                interaction.reply({ content: "They don't have enough funds!", ephemeral: true });
+            } else if (targetUser.money < 2 * amount) {
+                interaction.reply({ content: "You can only bet up to half of your opponent's money!", ephemeral: true });
             } else {
                 if (Math.random() < 0.5) {
                     // user wins
