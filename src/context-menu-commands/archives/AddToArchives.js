@@ -16,16 +16,7 @@ module.exports = async (client, interaction) => {
             interaction.reply({ content: 'You cannot add your own message to the archives!', ephemeral: true }); // user cannot archive their own message
         } else {
             
-            // need to fix to replace this with buildModal
-            const modal = new ModalBuilder()
-                .setCustomId(`archiveModal`)
-                .setTitle('Add to Archives');
-            const archiveNameInput = new TextInputBuilder()
-                .setCustomId('archiveNameInput')
-                .setLabel('Name the Archive Entry')
-                .setStyle(TextInputStyle.Short);
-            const firstActionRow = new ActionRowBuilder().addComponents(archiveNameInput);
-            modal.addComponents(firstActionRow);
+            const modal = await buildModal(client);
             await interaction.showModal(modal);
             const filter = (interaction) => interaction.customId === 'archiveModal';
 
