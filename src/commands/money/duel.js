@@ -1,4 +1,5 @@
 const { ApplicationCommandOptionType } = require('discord.js');
+const Wealth = require('../../models/Wealth');
 
 module.exports = {
     name: 'duel',
@@ -18,15 +19,73 @@ module.exports = {
         },
     ],
 
-    callback: (client, interaction) => {
+    callback: async (client, interaction) => {
 
         const amount = interaction.options.get('amount').value;
         const target = interaction.options.get('target-user').member; // useful to have the object as a guild member
+        
+        const queryUser = {
+            userId: interaction.user.id,
+            guildId: interaction.guild.id,
+        }
 
-        if (Math.random() < 0.5) {
-            interaction.reply(`<@${interaction.member.id}> you win against <@${target.id}>! You double your wager to £${2 * amount}.`);
-        } else {
-            interaction.reply(`<@${interaction.member.id}> you win against <@${target.id}>! You lose your £${amount}.`);
+        const queryTarget = {
+            userId: target.id,
+            guildId: interaction.guild.id,
+        }
+
+        try {
+            const userWealth = await Wealth.findOne(queryUser);
+            const targetWealth = await Wealth.findOne(queryTarget);
+            
+            if (!userWealth) {
+                const newWealth = new Wealth({
+                    userId: interaction.user.id,
+                    guildId: interaction.guild.id,
+                })
+                await newWealth.save()
+                    .then(interaction.reply("They don't have enough funds!"))
+                    .catch(error => console.error(`Error creating new wealth entry ${error}`));
+            }
+
+            if (!targetWealth) {
+                const newWealth = new Wealth({
+                    userId: target.id,
+                    guildId: interaction.guild.id,
+                })
+                await newWealth.save()
+                    .then(
+                        interaction.reply("They don't have enough funds!"))
+                    .catch(error => console.error(`Error creating new wealth entry ${error}`));
+            }
+
+            if (userWealth.money < amount) {
+                interaction.reply("You don't have enough funds!");
+            } else if (targetWealth.money < amount) {
+                interaction.reply("They don't have enough funds!");
+            } else {
+                if (Math.random() < 0.5) {
+                    // user wins
+                    userWealth.money += amount;
+                    await userWealth.save()
+                        .catch(error => console.error(`Error saving new moneys: ${error}`));
+                    targetWealth.money -= amount;
+                        await targetWealth.save()
+                            .catch(error => console.error(`Error saving new moneys: ${error}`));
+                    interaction.reply(`<@${interaction.member.id}> you win against <@${target.id}>! You double your wager to £${2 * amount}.`);
+                } else {
+                    // user loses
+                    targetWealth.money += amount;
+                    await targetWealth.save()
+                        .catch(error => console.error(`Error saving new moneys: ${error}`));
+                    userWealth.money -= amount;
+                        await userWealth.save()
+                            .catch(error => console.error(`Error saving new moneys: ${error}`));
+                    interaction.reply(`<@${interaction.member.id}> you win against <@${target.id}>! You lose your £${amount}.`);
+                }
+            }
+        } catch (error) {
+            console.error(`Error giving money: ${error}`)
         }
     }
 }
