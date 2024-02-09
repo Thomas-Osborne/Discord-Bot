@@ -25,11 +25,14 @@ module.exports = {
         const amount = interaction.options.get('amount').value;
         const target = interaction.options.get('target-user').member; // useful to have the object as a guild member
 
-        console.log(target);
-
         const query = {
             userId: target.id,
             guildId: target.guild.id,
+        }
+
+        if (amount <= 0 || !Number.isInteger(amount)) {
+            interaction.reply({ content: "The amount must be a positive integer.", ephemeral: true })
+            return;
         }
 
         try {

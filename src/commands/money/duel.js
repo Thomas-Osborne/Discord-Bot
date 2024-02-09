@@ -27,6 +27,7 @@ module.exports = {
             interaction.reply({ content: "The amount must be a positive integer.", ephemeral: true })
             return;
         }
+        
         const target = interaction.options.get('target-user').member; // useful to have the object as a guild member
         
         const queryUser = {
