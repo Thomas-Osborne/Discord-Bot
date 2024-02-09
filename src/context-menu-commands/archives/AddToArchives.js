@@ -20,7 +20,7 @@ module.exports = async (client, interaction) => {
             const filter = (interaction) => interaction.customId === 'archiveModal';
 
             interaction
-                .awaitModalSubmit( {filter, time: 15_000} )
+                .awaitModalSubmit( {filter, time: 60_000} )
                 .then(async (modalInteraction) => {
                     let archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
                     if (await canArchive(client, interaction.targetMessage)) {
@@ -33,6 +33,7 @@ module.exports = async (client, interaction) => {
                 })
                 .catch(error => {
                     console.log(`Error with submitting modal: ${error}`);
+                    return;
                 })
         }        
     } catch (error) {
