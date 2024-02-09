@@ -2,6 +2,7 @@ const { Client, MessageReaction, User } = require('discord.js');
 const numberToWords = require('number-to-words'); // changes number into word form
 const canArchive = require('../../utils/canArchive');
 const addToArchives = require('../../utils/addToArchives');
+const unwrapEmojiName = require('../../utils/unwrapEmojiName');
 
 /**
  *
@@ -50,12 +51,7 @@ module.exports = async (client, reaction, user) => {
 
         // if pass all conditions then can archive message
 
-        let emojiStr;
-        if (reaction.emoji.id) {
-            emojiStr = `<:${reaction.emoji.name}:${reaction.emoji.id}>`;
-        } else {
-            emojiStr = reaction.emoji.name;
-        }
+        const emojiStr = unwrapEmojiName(reaction.emoji.id, reaction.emoji.name);
 
         let wordPlusEr;
         // make comparative version of the word
