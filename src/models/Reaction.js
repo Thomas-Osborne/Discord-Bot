@@ -36,6 +36,10 @@ const reactionSchema = new Schema({
         type: Boolean,
         required: true,
     },
+    timestamp: {
+        type: Date,
+        required: true,
+    }
 })
 
 reactionSchema.virtual('isSelfReact').get(function() {

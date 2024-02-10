@@ -4,6 +4,8 @@ const Person = require('../../models/Person');
 
 
 module.exports = async (client, reaction, user) => {
+    console.log(reaction.message.createdTimestamp);
+    console.log(typeof(reaction.message.createdTimestamp));
     try {
         if (reaction.partial) {
             try {
@@ -24,6 +26,7 @@ module.exports = async (client, reaction, user) => {
             authorIsBot: reaction.message.author.bot,
             reacterId: user.id,
             reacterIsBot: user.bot,
+            timestamp: reaction.message.createdTimestamp,
         })
         await react.save()
             .catch(error => console.error(`Error creating new reaction entry: ${error}`));
