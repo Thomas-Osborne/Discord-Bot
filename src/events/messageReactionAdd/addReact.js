@@ -4,8 +4,6 @@ const Person = require('../../models/Person');
 
 
 module.exports = async (client, reaction, user) => {
-    console.log(reaction.message.createdTimestamp);
-    console.log(typeof(reaction.message.createdTimestamp));
     try {
         if (reaction.partial) {
             try {
@@ -59,9 +57,6 @@ module.exports = async (client, reaction, user) => {
         await reacter.save()
             .catch(error => console.error(`Error adding new reaction to reacter: ${error}`))
 
-
-        console.log(author);
-        console.log(reacter);
         return;
 
     } catch (error) {
