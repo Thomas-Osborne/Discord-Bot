@@ -34,7 +34,7 @@ module.exports = {
 
         for (let i = 0; i < numberOfRows; i++) {
             embed.addFields(
-                {name: `Number ${i + 1}`, value: `${guild.members.cache.get(rankedMembers[i].userId).user.username}: £${rankedMembers[i].money}`},
+                {name: `Number ${i + 1}`, value: `${guild.members.cache.get(rankedMembers[i].userId).user.username} — £${rankedMembers[i].money}`},
             )
         }
 

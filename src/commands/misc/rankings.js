@@ -44,13 +44,15 @@ module.exports = {
         
         .setTitle('Leaderboard')
         .setDescription('Which reaction is most used?')
-        .addFields(
-              {name: '🥇 First Place 🥇', value: `${unwrapEmojiName(rankedReactions[0].reactionId, rankedReactions[0].name)}—\t${rankedReactions[0].total}`},
-              {name: '🥈 Second Place 🥈', value:`${unwrapEmojiName(rankedReactions[1].reactionId, rankedReactions[1].name)}—\t${rankedReactions[1].total}`},
-              {name: '🥉 Third Place 🥉', value: `${unwrapEmojiName(rankedReactions[2].reactionId, rankedReactions[2].name)}—\t${rankedReactions[2].total}`}
-        )
         .setTimestamp(Date.now())
 
+        const numberOfRows = Math.min(rankedReactions.length, 10);
+
+        for (let i = 0; i < numberOfRows; i++) {
+            embed.addFields(
+                {name: `Number ${i + 1}`, value: `${unwrapEmojiName(rankedReactions[i].reactionId, rankedReactions[i].name)}—\t${rankedReactions[i].total}`},
+            )
+        }
         await interaction.reply({ embeds: [embed]});
     }
 }
