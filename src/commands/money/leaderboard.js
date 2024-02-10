@@ -28,12 +28,15 @@ module.exports = {
         const embed = new EmbedBuilder()
         .setTitle('Leaderboard')
         .setDescription('Who has the most money?')
-        .addFields(
-              {name: '🥇 First Place 🥇', value: `${guild.members.cache.get(rankedMembers[0].userId).user.username}: ${rankedMembers[0].money}`},
-              {name: '🥈 Second Place 🥈', value: `${guild.members.cache.get(rankedMembers[1].userId).user.username}: ${rankedMembers[1].money}`},
-              {name: '🥉 Third Place 🥉', value: `${guild.members.cache.get(rankedMembers[2].userId).user.username}: ${rankedMembers[2].money}`}
-        )
         .setTimestamp(Date.now())
+
+        const numberOfRows = Math.min(rankedMembers.length, 10);
+
+        for (let i = 0; i < numberOfRows; i++) {
+            embed.addFields(
+                {name: `Number ${i + 1}`, value: `${guild.members.cache.get(rankedMembers[i].userId).user.username}: £${rankedMembers[i].money}`},
+                )
+        }
 
         await interaction.reply({ embeds: [embed]});
     }
