@@ -34,10 +34,6 @@ module.exports = {
 
         let sentOrReceived = (interaction.options.get('sent-or-received'));
 
-        if (emoji && sentOrReceived) {
-            interaction.reply({ content: 'You cannot fill both the emoji and sent-or-received arguments!', ephemeral: true })
-            return;
-        }
 
         if (!sentOrReceived) {
             sentOrReceived = 'reactionsReceived'; // assume received if not filled in
@@ -55,6 +51,11 @@ module.exports = {
 
         let data;
         const user = interaction.options.get('user');
+        if (emoji && user) {
+            interaction.reply({ content: 'You cannot fill both the emoji and user arguments!', ephemeral: true })
+            return;
+        }
+
         if (user) {
             const person = await Person.findOne( {userId: user.value } ).populate(sentOrReceived);
             if (sentOrReceived === 'reactionsSent') {
