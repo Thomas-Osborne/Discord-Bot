@@ -33,8 +33,17 @@ module.exports = {
         const numberOfRows = Math.min(rankedMembers.length, 10);
 
         for (let i = 0; i < numberOfRows; i++) {
+            if (i === 0) {
+                nameString = '🥇 1st Place 🥇'
+            } else if (i === 1) {
+                nameString = '🥈 2nd Place 🥈'
+            } else if (i === 2) {
+                nameString = '🥉 3rd Place 🥉'
+            } else {
+                nameString = `${i + 1}th Place`
+            }
             embed.addFields(
-                {name: `Number ${i + 1}`, value: `${guild.members.cache.get(rankedMembers[i].userId).user.username} — £${rankedMembers[i].money}`},
+                {name: nameString, value: `${guild.members.cache.get(rankedMembers[i].userId).user.username} — £${rankedMembers[i].money}`},
             )
         }
 

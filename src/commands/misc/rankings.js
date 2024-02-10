@@ -49,8 +49,17 @@ module.exports = {
         const numberOfRows = Math.min(rankedReactions.length, 10);
 
         for (let i = 0; i < numberOfRows; i++) {
+            if (i === 0) {
+                nameString = '🥇 1st Place 🥇'
+            } else if (i === 1) {
+                nameString = '🥈 2nd Place 🥈'
+            } else if (i === 2) {
+                nameString = '🥉 3rd Place 🥉'
+            } else {
+                nameString = `${i + 1}th Place`
+            }
             embed.addFields(
-                {name: `Number ${i + 1}`, value: `${unwrapEmojiName(rankedReactions[i].reactionId, rankedReactions[i].name)}—\t${rankedReactions[i].total}`},
+                {name: nameString, value: `${unwrapEmojiName(rankedReactions[i].reactionId, rankedReactions[i].name)}—\t${rankedReactions[i].total}`},
             )
         }
         await interaction.reply({ embeds: [embed]});
