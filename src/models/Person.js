@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const Reaction = require('./Reaction');
+const Message = require('./Message');
 
 const personSchema = new Schema({
     userId: {
