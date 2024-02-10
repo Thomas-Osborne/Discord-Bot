@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 const Reaction = require('./Reaction');
 
-const userSchema = new Schema({
+const personSchema = new Schema({
     userId: {
         type: String,
         required: true,
@@ -26,4 +26,4 @@ const userSchema = new Schema({
     }],
 })
 
-module.exports = model('Person', userSchema);
+module.exports = model('Person', personSchema);
