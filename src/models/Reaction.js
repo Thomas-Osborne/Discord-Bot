@@ -28,14 +28,18 @@ const reactionSchema = new Schema({
         type: Boolean,
         required: true,
     },
-    // reacterId: {
-    //     type: String,
-    //     requried: true,
-    // },
-    // selfReact: {
-    //     type: Boolean,
-    //     required: true,
-    // },
+    reacterId: {
+        type: String,
+        requried: true,
+    },
+    reacterIsBot: {
+        type: Boolean,
+        required: true,
+    },
+})
+
+reactionSchema.virtual('isSelfReact').get(function() {
+    return this.authorId === this.reacterId;
 })
 
 module.exports = model('Reaction', reactionSchema);

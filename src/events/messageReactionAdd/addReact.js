@@ -26,12 +26,13 @@ module.exports = async (client, reaction, user) => {
             channelId: reaction.message.channelId,
             authorId: reaction.message.author.id,
             authorIsBot: reaction.message.author.bot,
-            // reacterId: reaction.message.interaction.user.id,
-            // selfReact: (reaction.message.author.id === reaction.message.interaction.user.id),
+            reacterId: user.id,
+            reacterIsBot: user.bot,
         })
         await react.save()
             .catch(error => console.error(`Error creating new reaction entry ${error}`));
 
+        console.log(react.isSelfReact);
         return;
 
     } catch (error) {
