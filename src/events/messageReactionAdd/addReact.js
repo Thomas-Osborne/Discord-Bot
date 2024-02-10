@@ -18,9 +18,6 @@ module.exports = async (client, reaction, user) => {
             }
         }
 
-        // WHY IS USER UNDEFINED?????????
-        // console.log(user);
-
         const react = new Reaction({
             reactionId: reaction.emoji.id,
             name: reaction.emoji.name,
