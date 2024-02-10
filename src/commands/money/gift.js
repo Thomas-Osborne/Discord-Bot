@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType } = require('discord.js');
-const User = require('../../models/User');
+const Person = require('../../models/Person');
 
 module.exports = {
     name: 'gift',
@@ -36,14 +36,14 @@ module.exports = {
         }
 
         try {
-            const user = await User.findOne(query);
+            const user = await Person.findOne(query);
             
             if (user) {
                 user.money += amount;
                 await user.save()
                     .catch(error => console.error(`Error saving new moneys: ${error}`));
             } else {
-                const newUser = new User({
+                const newUser = new Person({
                     userId: target.id,
                     guildId: target.guild.id,
                     money: amount,

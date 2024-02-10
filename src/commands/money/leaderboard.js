@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const User = require('../../models/User');
+const Person = require('../../models/Person');
 
 module.exports = {
     name: 'leaderboard',
@@ -7,7 +7,7 @@ module.exports = {
     devOnly: true,
 
     callback: async (client, interaction) => {
-        const data = await User.find({});
+        const data = await Person.find({});
 
         const guild = client.guilds.cache.get(interaction.guild.id);
         await guild.members.fetch();

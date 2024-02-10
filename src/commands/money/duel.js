@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType } = require('discord.js');
-const User = require('../../models/User');
+const Person = require('../../models/Person');
 
 module.exports = {
     name: 'duel',
@@ -41,12 +41,12 @@ module.exports = {
         }
 
         try {
-            const targeterUser = await User.findOne(queryTargeter);
-            const targetUser = await User.findOne(queryTarget);
+            const targeterUser = await Person.findOne(queryTargeter);
+            const targetUser = await Person.findOne(queryTarget);
             
             if (!targeterUser || !targetUser) {
                 if (!targeterUser) {
-                    const newUser = new User({
+                    const newUser = new Person({
                         userId: interaction.user.id,
                         guildId: interaction.guild.id,
                     })
@@ -54,7 +54,7 @@ module.exports = {
                 }
 
                 if (!targetUser) {
-                    const newUser = new User({
+                    const newUser = new Person({
                         userId: target.id,
                         guildId: interaction.guild.id,
                     })

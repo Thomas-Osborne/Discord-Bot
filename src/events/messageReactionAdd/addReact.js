@@ -1,12 +1,8 @@
-const { Client, MessageReaction, User } = require('discord.js');
+require('discord.js');
 const Reaction = require('../../models/Reaction');
+const Person = require('../../models/Person');
 
-/**
- *
- * @param {Client} client
- * @param {MessageReaction} reaction
- * @param {User} user
- */
+
 module.exports = async (client, reaction, user) => {
     try {
         if (reaction.partial) {
@@ -30,7 +26,39 @@ module.exports = async (client, reaction, user) => {
             reacterIsBot: user.bot,
         })
         await react.save()
-            .catch(error => console.error(`Error creating new reaction entry ${error}`));
+            .catch(error => console.error(`Error creating new reaction entry: ${error}`));
+
+        let author = await Person.findOne({ userId: react.authorId, });
+
+        if (!author) {
+            author = new Person({
+                userId: react.authorId,
+                guildId: react.guildId,
+            })
+        }
+
+
+        author.reactionsReceived.push(react._id);
+        await author.save()
+            .catch(error => console.error(`Error adding new reaction to author: ${error}`))
+
+
+        let reacter = await Person.findOne({ userId: react.reacterId, });
+
+        if (!reacter) {
+            reacter = new Person({
+                userId: react.reacterId,
+                guildId: react.guildId,
+            })
+        }
+
+        reacter.reactionsSent.push(react._id);
+        await reacter.save()
+            .catch(error => console.error(`Error adding new reaction to reacter: ${error}`))
+
+
+        console.log(author);
+        console.log(reacter);
         return;
 
     } catch (error) {
