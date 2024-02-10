@@ -1,3 +1,3 @@
 module.exports = (date) => {
-    return `<t:${Math.floor((Date.now() / 1000)).toString()}:d>`;
+    return `<t:${Math.floor((date / 1000)).toString()}:d>`;
 }
