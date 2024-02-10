@@ -1,5 +1,6 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const Reaction = require('../../models/Reaction');
+const Person = require('../../models/Person');
 const unwrapEmojiName = require('../../utils/unwrapEmojiName');
 
 module.exports = {
@@ -9,17 +10,42 @@ module.exports = {
     options: [
         {
             name: 'user',
-            description: 'The user to find out their most received used reaction.',
+            description: 'The user to find out a reaction.',
             type: ApplicationCommandOptionType.Mentionable,
         },
+        {
+            name: 'sent-or-received',
+            description: 'Type SEND or RECEIVED to find leaderboard for sent or received emojis respectively.',
+            type: ApplicationCommandOptionType.String,
+        }
     ],
 
     callback: async (client, interaction) => {
         
+        let sentOrReceived = (interaction.options.get('sent-or-received'));
+        if (!sentOrReceived) {
+            sentOrReceived = 'reactionsReceived'; // assume received if not filled in
+        } else {
+            sentOrReceived = sentOrReceived.value.toLowerCase();
+            if (sentOrReceived === 'sent' || sentOrReceived === 'send') {
+                sentOrReceived = 'reactionsSent';
+            } else if (sentOrReceived === 'received' || sentOrReceived === 'receive') {
+                sentOrReceived = 'reactionsReceived';
+            } else {
+                interaction.reply({ content: 'Option must either be SENT or RECEIVED.', ephemeral: true })
+                return;
+            }
+        }
+
         let data;
-        if (interaction.options.get('user')) {
-            const userId = interaction.options.get('user').value;
-            data = await Reaction.find({authorId: userId});
+        const user = interaction.options.get('user');
+        if (user) {
+            const person = await Person.findOne( {userId: user.value } ).populate(sentOrReceived);
+            if (sentOrReceived === 'reactionsSent') {
+                data = person.reactionsSent;
+            } else if (sentOrReceived === 'reactionsReceived') {
+                data = person.reactionsReceived;
+            }
         } else {
             data = await Reaction.find({});
         }
@@ -43,7 +69,10 @@ module.exports = {
         const embed = new EmbedBuilder()
         
         .setTitle('Leaderboard')
-        .setDescription('Which reaction is most used?')
+        .setDescription(user 
+            ? `Which reaction is most used by ${user.value}?`
+            : `Which reaction is most used?`
+        )
         .setTimestamp(Date.now())
 
         const numberOfRows = Math.min(rankedReactions.length, 10);
