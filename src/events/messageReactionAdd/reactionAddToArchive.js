@@ -64,7 +64,7 @@ module.exports = async (client, reaction, user) => {
 
         const archiveTitle = `A ${wordPlusEr} from ${reaction.message.author.displayName}`;
 
-        addArchiveEntry(reaction.message.id, reaction.message.guildId, reaction.message.channelId, reaction.message.author.id, reaction.message.createdTimestamp, archiveTitle);
+        await addArchiveEntry(reaction.message.id, reaction.message.guildId, reaction.message.channelId, reaction.message.author.id, reaction.message.createdTimestamp, archiveTitle);
 
         const url = await addToArchives(client, reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, archiveTitle);
         reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}\n\n_See the [archive entry](<${url}>)._`);

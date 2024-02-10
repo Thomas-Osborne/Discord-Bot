@@ -1,5 +1,6 @@
 const { Client, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 const addToArchives = require('../../utils/addToArchives');
+const addArchiveEntry = require('../../utils/addArchiveEntry');
 const canArchive = require('../../utils/canArchive');
 const buildModal = require('../../utils/buildModal'); // TODO
 
@@ -24,6 +25,7 @@ module.exports = async (client, interaction) => {
                 .then(async (modalInteraction) => {
                     let archiveNameValue = modalInteraction.fields.getTextInputValue('archiveNameInput');
                     if (await canArchive(client, interaction.targetMessage)) {
+                        await addArchiveEntry(interaction.targetMessage.id, interaction.targetMessage.guildId, interaction.targetMessage.channelId, interaction.targetMessage.author.id, interaction.targetMessage.createdTimestamp, archiveNameValue);
                         const url = await addToArchives(client, interaction.targetMessage, interaction.member.displayName, archiveNameValue);
                         interaction.targetMessage.reply(`<@${interaction.member.id}> has archived <@${interaction.targetMessage.author.id}>'s message!\n\n_See the [archive entry](<${url}>)._`);
                     } else {
