@@ -13,9 +13,17 @@ const messageSchema = new Schema({
         type: String,
         required: true,
     },
+    authorId: {
+        type: String,
+        required: true,
+    },
     timeStamp: {
         type: Date,
         required: true,
+    },
+    archiveTitle: {
+        type: String,
+        default: "",
     },
     imageUrl: {
         type: String,
