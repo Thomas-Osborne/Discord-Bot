@@ -15,7 +15,7 @@ module.exports = {
         },
         {
             name: 'sent-or-received',
-            description: 'Type SEND or RECEIVED to find leaderboard for sent or received emojis respectively.',
+            description: 'Type SENT or RECEIVED to find leaderboard for sent or received emojis respectively.',
             type: ApplicationCommandOptionType.String,
         },
         {
@@ -26,7 +26,7 @@ module.exports = {
     ],
 
     callback: async (client, interaction) => {
-
+        const guild = client.guilds.cache.get(interaction.guild.id);
         let emoji = interaction.options.get('emoji')
 
         let emojiName;
@@ -79,8 +79,7 @@ module.exports = {
                 reaction.total = await Reaction.find({name: reaction.name}).count();
             }
 
-        } else {
-            const guild = client.guilds.cache.get(interaction.guild.id);
+        } else if (emoji) {
             await guild.members.fetch();
             const membersId = guild.members.cache.map(member => member.id);
 
@@ -95,25 +94,32 @@ module.exports = {
                 rankedReactions.push({userId: id, total: count});
             }
 
-            console.log(rankedReactions);
+        } else {
+            data = await Reaction.find({});
+            for (const item of data) {
+                if (!(rankedReactions.map(reaction => reaction.name).includes((item.name)))) {
+                    rankedReactions.push({reactionId: item.reactionId, name: item.name, total: 0});
+                }
+            }
+    
+            for (const reaction of rankedReactions) {
+                reaction.total = await Reaction.find({name: reaction.name}).count();
+            }
         }
 
 
         rankedReactions = rankedReactions
             .sort((a, b) => b.total - a.total)
-            .filter(reaction => reaction.total >= 0);
+            .filter(reaction => reaction.total > 0);
 
         const embed = new EmbedBuilder()
-        
+
         .setTitle('Leaderboard')
-        .setDescription(user 
-            ? `Which reaction is most used by ${user.value}?`
-            : `Which reaction is most used?`
-        )
+        .setDescription(generateDescription(sentOrReceived, user, emojiName, emojiId))
         .setTimestamp(Date.now())
 
         const numberOfRows = Math.min(rankedReactions.length, 10);
-
+        
         for (let i = 0; i < numberOfRows; i++) {
             if (i === 0) {
                 nameString = '🥇 1st Place 🥇'
@@ -125,9 +131,37 @@ module.exports = {
                 nameString = `${i + 1}th Place`
             }
             embed.addFields(
-                {name: nameString, value: `${unwrapEmojiName(rankedReactions[i].reactionId, rankedReactions[i].name)}—\t${rankedReactions[i].total}`},
+                {name: nameString, value: generateFieldValue(emoji ? true : false, rankedReactions[i])},
             )
         }
         await interaction.reply({ embeds: [embed]});
+
+        function generateDescription(sentOrReceived, user, emojiName, emojiId) {
+            let sentOrReceivedSubstring;
+            if (sentOrReceived === "reactionsSent") {
+                sentOrReceivedSubstring = 'send'
+            } else {
+                sentOrReceivedSubstring = 'receive'
+            }
+
+            if (user) {
+                return `Which reaction does ${guild.members.cache.get(user.value).user.username} ${sentOrReceivedSubstring} the most?`;
+            } else if (emojiName) {
+                return `Who reacts the most with ${unwrapEmojiName(emojiId, emojiName)}?`;
+            } else {
+                return `Which reaction is used the most?`;
+            }
+        }
+
+        function generateFieldValue(thereIsEmoji, entry) {
+            if (thereIsEmoji) {
+                return `${guild.members.cache.get(entry.userId).user.username} — ${entry.total} times`;
+            } else {
+                return `${unwrapEmojiName(entry.reactionId, entry.name)}—\t${entry.total}`;
+
+            }
+        }
     }
+
+
 }
