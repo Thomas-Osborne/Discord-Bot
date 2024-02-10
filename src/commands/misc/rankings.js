@@ -2,6 +2,7 @@ const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const Reaction = require('../../models/Reaction');
 const Person = require('../../models/Person');
 const unwrapEmojiName = require('../../utils/unwrapEmojiName');
+const formatDate = require('../../utils/formatDate');
 
 module.exports = {
     name: 'rankings',
