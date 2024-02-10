@@ -17,11 +17,23 @@ module.exports = {
             name: 'sent-or-received',
             description: 'Type SEND or RECEIVED to find leaderboard for sent or received emojis respectively.',
             type: ApplicationCommandOptionType.String,
-        }
+        },
+        {
+            name: 'emoji',
+            description: 'Emoji to find rankings of',
+            type: ApplicationCommandOptionType.String,
+        },
     ],
 
     callback: async (client, interaction) => {
-        
+
+        let emoji = interaction.options.get('emoji').value;
+        emoji = emoji.replace('<:', '');
+        emoji = emoji.replace('>', '');
+        const [emojiName, emojiId] = emoji.split(":"); 
+
+
+
         let sentOrReceived = (interaction.options.get('sent-or-received'));
         if (!sentOrReceived) {
             sentOrReceived = 'reactionsReceived'; // assume received if not filled in
