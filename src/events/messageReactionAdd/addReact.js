@@ -31,8 +31,6 @@ module.exports = async (client, reaction, user) => {
         })
         await react.save()
             .catch(error => console.error(`Error creating new reaction entry ${error}`));
-
-        console.log(react.isSelfReact);
         return;
 
     } catch (error) {
