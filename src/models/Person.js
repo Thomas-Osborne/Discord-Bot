@@ -1,6 +1,7 @@
 const { Schema, model } = require('mongoose');
 const Reaction = require('./Reaction');
 const Message = require('./Message');
+const Pet = require('./Pet');
 
 const personSchema = new Schema({
     userId: {
@@ -28,6 +29,11 @@ const personSchema = new Schema({
     messagesArchived: [{
         type: Schema.Types.ObjectId,
         ref: Message,
+        default: [],
+    }],
+    petPictures: [{
+        type: Schema.Types.ObjectId,
+        ref: Pet,
         default: [],
     }]
 })

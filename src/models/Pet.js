@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const messageSchema = new Schema({
+const petSchema = new Schema({
     messageId: {
         type: String,
         required: true,
@@ -9,22 +9,18 @@ const messageSchema = new Schema({
         type: String,
         required: true,
     },
-    channelId: {
-        type: String,
-        required: true,
-    },
     authorId: {
         type: String,
         required: true,
     },
-    timeStamp: {
+    url: {
+        type: String,
+        required: true,
+    },
+    timestamp: {
         type: Date,
         required: true,
     },
-    archiveTitle: {
-        type: String,
-        default: "",
-    },
 })
 
-module.exports = model('Message', messageSchema);
+module.exports = model('Pet', petSchema);
