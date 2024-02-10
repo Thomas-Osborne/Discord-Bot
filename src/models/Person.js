@@ -24,6 +24,11 @@ const personSchema = new Schema({
         ref: Reaction,
         default: [],
     }],
+    messagesArchived: [{
+        type: Schema.Types.ObjectId,
+        ref: Message,
+        default: [],
+    }]
 })
 
 module.exports = model('Person', personSchema);
