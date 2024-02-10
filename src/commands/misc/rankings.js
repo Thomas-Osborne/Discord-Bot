@@ -27,13 +27,19 @@ module.exports = {
 
     callback: async (client, interaction) => {
 
-        let emoji = interaction.options.get('emoji').value;
-        emoji = emoji.replace('<:', '');
-        emoji = emoji.replace('>', '');
-        const [emojiName, emojiId] = emoji.split(":"); 
+        let emoji = interaction.options.get('emoji')
 
+        let emojiName;
+        let emojiId;
+
+        if (emoji) {
+            emoji = emoji.value;
+            emoji = emoji.replace('<:', '');
+            emoji = emoji.replace('>', '');
+            [emojiName, emojiId] = emoji.split(":"); 
+        }
+        
         let sentOrReceived = (interaction.options.get('sent-or-received'));
-
 
         if (!sentOrReceived) {
             sentOrReceived = 'reactionsReceived'; // assume received if not filled in
@@ -56,6 +62,7 @@ module.exports = {
             return;
         }
 
+        let rankedReactions = [];
         if (user) {
             const person = await Person.findOne( {userId: user.value } ).populate(sentOrReceived);
             if (sentOrReceived === 'reactionsSent') {
@@ -63,23 +70,34 @@ module.exports = {
             } else if (sentOrReceived === 'reactionsReceived') {
                 data = person.reactionsReceived;
             }
-        } else {
-            data = await Reaction.find({});
-        }
-
-
-
-        let rankedReactions = [];
-
-        for (const item of data) {
-            if (!(rankedReactions.map(reaction => reaction.name).includes((item.name)))) {
-                rankedReactions.push({reactionId: item.reactionId, name: item.name, total: 0});
+            for (const item of data) {
+                if (!(rankedReactions.map(reaction => reaction.name).includes((item.name)))) {
+                    rankedReactions.push({reactionId: item.reactionId, name: item.name, total: 0});
+                }
             }
+            for (const reaction of rankedReactions) {
+                reaction.total = await Reaction.find({name: reaction.name}).count();
+            }
+
+        } else {
+            const guild = client.guilds.cache.get(interaction.guild.id);
+            await guild.members.fetch();
+            const membersId = guild.members.cache.map(member => member.id);
+
+            let typeOfId;
+            if (sentOrReceived === 'reactionsSent') {
+                typeOfId = 'reacterId';
+            } else {
+                typeOfId = 'authorId';
+            }
+            for (const id of membersId) {
+                count = await Reaction.find( {name: emojiName, [typeOfId]: id }).count();
+                rankedReactions.push({userId: id, total: count});
+            }
+
+            console.log(rankedReactions);
         }
 
-        for (const reaction of rankedReactions) {
-            reaction.total = await Reaction.find({name: reaction.name}).count();
-        }
 
         rankedReactions = rankedReactions
             .sort((a, b) => b.total - a.total)
