@@ -2,9 +2,8 @@ const { Client, MessageReaction, User } = require('discord.js');
 const numberToWords = require('number-to-words'); // changes number into word form
 const canArchive = require('../../utils/canArchive');
 const addToArchives = require('../../utils/addToArchives');
+const addArchiveEntry = require('../../utils/addArchiveEntry');
 const unwrapEmojiName = require('../../utils/unwrapEmojiName');
-const Person = require('../../models/Person');
-const Message = require('../../models/Message');
 
 /**
  *
@@ -65,32 +64,7 @@ module.exports = async (client, reaction, user) => {
 
         const archiveTitle = `A ${wordPlusEr} from ${reaction.message.author.displayName}`;
 
-        const message = new Message({
-            messageId: reaction.message.id,
-            guildId: reaction.message.guildId,
-            channelId: reaction.message.channelId,
-            authorId: reaction.message.author.id,
-            timeStamp: reaction.message.createdTimestamp,
-            archiveTitle: archiveTitle,
-        })
-
-        await message.save()
-            .catch(error => console.error(`Error creating new message: ${error}`));
-
-        let author = await Person.findOne({ userId: message.authorId, });
-
-        if (!author) {
-            author = new Person({
-                userId: message.authorId,
-                guildId: message.guildId,
-            })
-        }
-
-        author.messagesArchived.push(message._id);
-        await author.save()
-            .catch(error => console.error(`Error adding new reaction to author: ${error}`))
-
-
+        addArchiveEntry(reaction.message.id, reaction.message.guildId, reaction.message.channelId, reaction.message.author.id, reaction.message.createdTimestamp, archiveTitle);
 
         const url = await addToArchives(client, reaction.message, `That's a ${wordPlusEr}! ${emojiStr}`, archiveTitle);
         reaction.message.reply(`That's a ${wordPlusEr}! ${emojiStr}\n\n_See the [archive entry](<${url}>)._`);
