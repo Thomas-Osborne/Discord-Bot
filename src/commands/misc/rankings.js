@@ -32,9 +32,13 @@ module.exports = {
         emoji = emoji.replace('>', '');
         const [emojiName, emojiId] = emoji.split(":"); 
 
-
-
         let sentOrReceived = (interaction.options.get('sent-or-received'));
+
+        if (emoji && sentOrReceived) {
+            interaction.reply({ content: 'You cannot fill both the emoji and sent-or-received arguments!', ephemeral: true })
+            return;
+        }
+
         if (!sentOrReceived) {
             sentOrReceived = 'reactionsReceived'; // assume received if not filled in
         } else {
@@ -61,6 +65,8 @@ module.exports = {
         } else {
             data = await Reaction.find({});
         }
+
+
 
         let rankedReactions = [];
 
