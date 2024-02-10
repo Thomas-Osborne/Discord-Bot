@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandOptionType, userMention } = require('discord.js');
 const Person = require('../../models/Person');
 
 module.exports = {
@@ -36,19 +36,19 @@ module.exports = {
         }
 
         try {
-            const user = await Person.findOne(query);
+            let user = await Person.findOne(query);
             
             if (user) {
                 user.money += amount;
                 await user.save()
                     .catch(error => console.error(`Error saving new moneys: ${error}`));
             } else {
-                const newUser = new Person({
+                user = new Person({
                     userId: target.id,
                     guildId: target.guild.id,
                     money: amount,
                 })
-                await newUser.save()
+                await user.save()
                     .catch(error => console.error(`Error creating new user entry ${error}`));
             }
             interaction.reply(`Sent <@${target.id}> £${amount}! They now have £${user.money}.`);
