@@ -36,7 +36,7 @@ module.exports = {
             fieldValues.push(`${guild.members.cache.get(rankings[i].id).user.displayName} — ${rankings[i].value} times`);
         }
 
-        const embed = await createLeaderboard(numberOfRows, 'Leaderboard', 'Who has self-reacted the most?', Date.now(), fieldValues)
+        const embed = await createLeaderboard(numberOfRows, 'Top Self-Reacters', 'Who has self-reacted the most?', Date.now(), fieldValues)
         await interaction.reply({ embeds: [embed]});
 
     }

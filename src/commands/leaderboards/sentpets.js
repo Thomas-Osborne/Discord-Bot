@@ -31,7 +31,7 @@ module.exports = {
             fieldValues.push(`${guild.members.cache.get(rankings[i].id).user.displayName} — ${rankings[i].value} times`);
         }
 
-        const embed = await createLeaderboard(numberOfRows, 'Leaderboard', `Who has sent the most images to <#${process.env.CHANNEL_PETS_ID}>?`, Date.now(), fieldValues);
+        const embed = await createLeaderboard(numberOfRows, 'Pet Sharers', `Who has sent the most images to <#${process.env.CHANNEL_PETS_ID}>?`, Date.now(), fieldValues);
         await interaction.reply({ embeds: [embed]});
 
     }

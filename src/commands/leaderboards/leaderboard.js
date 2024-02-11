@@ -30,7 +30,7 @@ module.exports = {
         for (let i = 0; i < numberOfRows; i++) {
             fieldValues.push(`${guild.members.cache.get(rankings[i].id).user.displayName} — £${rankings[i].value}`);
         }
-        const embed = await createLeaderboard(numberOfRows, 'Leaderboard', 'Who has the most money?', Date.now(), fieldValues);
+        const embed = await createLeaderboard(numberOfRows, 'Richest Bois', 'Who has the most money?', Date.now(), fieldValues);
 
         await interaction.reply({ embeds: [embed]});
     }
