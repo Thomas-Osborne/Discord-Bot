@@ -25,11 +25,11 @@ module.exports = async (client, message) => {
         const author = await Person.findOne({ userId: archivedMessage.authorId });
             author.messagesArchived.pull(archivedMessage._id);
             author.save()
-                .catch(error => console.error(`Error updating author when deleting pets: ${error}`));
+                .catch(error => console.error(`Error updating author when deleting archived message: ${error}`));
 
         return;        
 
     } catch (error) {
-        console.error(`Error deleting pet entry: ${error}`)
+        console.error(`Error deleting archived message entry: ${error}`)
     }
 }
