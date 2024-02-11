@@ -18,7 +18,15 @@ module.exports = async (client, message) => {
             return;
         }
 
+        const deletedPets = await Pet.find({ messageId: message.id, channelId: message.channelId, guildId: message.guildId});
         await Pet.deleteMany({ messageId: message.id, channelId: message.channelId, guildId: message.guildId});
+
+        for (const pet of deletedPets) {
+            const author = await Person.findOne({ userId: pet.authorId });
+            author.petPictures.pull(pet._id);
+            author.save()
+                .catch(error => console.error(`Error updating author when deleting pets: ${error}`));
+        }
 
         return;        
 
