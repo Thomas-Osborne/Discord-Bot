@@ -1,4 +1,6 @@
 const createLeaderboard = require('../../utils/createLeaderboard');
+const sortData = require('../../utils/sortData');
+
 const Pet = require('../../models/Pet');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
@@ -17,13 +19,10 @@ module.exports = {
         let rankings = [];
         for (const id of membersId) {
             count = await Pet.find( { authorId: id }).count();
-            console.log(count);
             rankings.push({id: id, value: count});
         }
 
-        rankings = rankings
-            .sort((a, b) => b.value - a.value)
-            .filter(pet => pet.value > 0);
+        rankings = sortData(rankings);
 
         const numberOfRows = Math.min(rankings.length, 10);
         const fieldValues = []

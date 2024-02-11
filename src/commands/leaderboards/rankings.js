@@ -64,7 +64,7 @@ module.exports = {
             return;
         }
 
-        let rankedReactions = [];
+        let rankings = [];
         if (user) {
             const person = await Person.findOne( {userId: user.value } ).populate(sentOrReceived);
             if (sentOrReceived === 'reactionsSent') {
@@ -73,12 +73,12 @@ module.exports = {
                 data = person.reactionsReceived;
             }
             for (const item of data) {
-                if (!(rankedReactions.map(reaction => reaction.name).includes((item.name)))) {
-                    rankedReactions.push({reactionId: item.reactionId, name: item.name, total: 0});
+                if (!(rankings.map(reaction => reaction.name).includes((item.name)))) {
+                    rankings.push({reactionId: item.reactionId, name: item.name, value: 0});
                 }
             }
-            for (const reaction of rankedReactions) {
-                reaction.total = await Reaction.find({name: reaction.name}).count();
+            for (const reaction of rankings) {
+                reaction.value = await Reaction.find({name: reaction.name}).count();
             }
 
         } else if (emoji) {
@@ -93,26 +93,25 @@ module.exports = {
             }
             for (const id of membersId) {
                 count = await Reaction.find( {name: emojiName, [typeOfId]: id }).count();
-                rankedReactions.push({userId: id, total: count});
+                rankings.push({userId: id, value: count});
             }
 
         } else {
             data = await Reaction.find({});
             for (const item of data) {
-                if (!(rankedReactions.map(reaction => reaction.name).includes((item.name)))) {
-                    rankedReactions.push({reactionId: item.reactionId, name: item.name, total: 0});
+                if (!(rankings.map(reaction => reaction.name).includes((item.name)))) {
+                    rankings.push({reactionId: item.reactionId, name: item.name, total: 0});
                 }
             }
     
-            for (const reaction of rankedReactions) {
+            for (const reaction of rankings) {
                 reaction.total = await Reaction.find({name: reaction.name}).count();
             }
         }
 
-
-        rankedReactions = rankedReactions
-            .sort((a, b) => b.total - a.total)
-            .filter(reaction => reaction.total > 0);
+        rankings = rankings
+            .sort((a, b) => b.value - a.value)
+            .filter(reaction => reaction.value > 0);
 
         const embed = new EmbedBuilder()
 
@@ -120,7 +119,7 @@ module.exports = {
         .setDescription(generateDescription(sentOrReceived, user, emojiName, emojiId))
         .setTimestamp(Date.now())
 
-        const numberOfRows = Math.min(rankedReactions.length, 10);
+        const numberOfRows = Math.min(rankings.length, 10);
         
         for (let i = 0; i < numberOfRows; i++) {
             if (i === 0) {
@@ -133,7 +132,7 @@ module.exports = {
                 nameString = `${i + 1}th Place`
             }
             embed.addFields(
-                {name: nameString, value: generateFieldValue(emoji ? true : false, rankedReactions[i])},
+                {name: nameString, value: generateFieldValue(emoji ? true : false, rankings[i])},
             )
         }
         await interaction.reply({ embeds: [embed]});

@@ -2,7 +2,10 @@ const { EmbedBuilder } = require('discord.js');
 const Reaction = require('../../models/Reaction');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
+const sortData = require('../../utils/sortData');
+
 const createLeaderboard = require('../../utils/createLeaderboard');
+
 
 require('dotenv').config();
 
@@ -19,13 +22,10 @@ module.exports = {
         let rankings = [];
         for (const id of membersId) {
             count = await Reaction.find( { authorId: id, reacterId: id }).count();
-            console.log(id, count);
             rankings.push({id: id, value: count});
         }
 
-        rankings = rankings
-            .sort((a, b) => b.value - a.value)
-            .filter(reaction => reaction.value > 0);
+        rankings = sortData(rankings);
 
 
         const numberOfRows = Math.min(rankings.length, 10);

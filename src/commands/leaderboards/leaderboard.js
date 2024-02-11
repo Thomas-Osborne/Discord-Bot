@@ -1,4 +1,5 @@
 const Person = require('../../models/Person');
+const sortData = require('../../utils/sortData');
 const createLeaderboard = require('../../utils/createLeaderboard');
 
 module.exports = {
@@ -21,9 +22,7 @@ module.exports = {
             }
         }
 
-        rankings = rankings
-        .sort((a, b) => b.value - a.value)
-        .filter(member => member.value > 0);
+        rankings = sortData(rankings);
 
         const numberOfRows = Math.min(rankings.length, 10);
         const fieldValues = []
