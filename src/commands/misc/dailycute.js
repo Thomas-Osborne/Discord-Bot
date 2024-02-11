@@ -12,15 +12,12 @@ module.exports = {
         const numberOfEntries = data.length;
 
         const randomInt = Math.floor(Math.random() * numberOfEntries);
-
         const chosenPet = data[randomInt];
-
 
         const author = guild.members.cache.get(chosenPet.authorId).user.username;
 
         const messageUrl = `http://discord.com/channels/${chosenPet.guildId}/${chosenPet.channelId}/${chosenPet.messageId}`
 
         interaction.reply(`Sent by ${author}\n${chosenPet.url}\n\n[_Original Message_](${messageUrl})`);
-    
     }
 }
