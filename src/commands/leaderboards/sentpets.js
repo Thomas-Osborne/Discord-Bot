@@ -5,7 +5,7 @@ const Pet = require('../../models/Pet');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
 
-const { channelPetsId } = require('../../../config.json');
+const { guildId, channelPetsId } = require('../../../config.json');
 
 module.exports = {
     name: 'sentpets',
@@ -18,7 +18,7 @@ module.exports = {
 
         let rankings = [];
         for (const id of membersId) {
-            count = await Pet.find( { authorId: id }).count();
+            count = await Pet.find( { guildId: guildId, channelId: channelPetsId, authorId: id}).count();
             rankings.push({id: id, value: count});
         }
 

@@ -110,9 +110,7 @@ module.exports = {
             }
         }
 
-        rankings = rankings
-            .sort((a, b) => b.value - a.value)
-            .filter(reaction => reaction.value > 0);
+        rankings = sortData(rankings);
 
         const embed = new EmbedBuilder()
 
