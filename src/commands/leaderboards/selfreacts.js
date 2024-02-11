@@ -12,7 +12,6 @@ require('dotenv').config();
 module.exports = {
     name: 'selfreacts',
     description: 'See who has self-reacted the most.',
-    devOnly: true,
 
     callback: async (client, interaction) => {
         const guild = client.guilds.cache.get(interaction.guild.id);

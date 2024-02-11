@@ -10,7 +10,6 @@ const getDateMonthYear = require('../../utils/getDateMonthYear');
 module.exports = {
     name: 'rankings',
     description: 'Show which emojis have got used the most.',
-    devOnly: true,
     options: [
         {
             name: 'user',
@@ -102,12 +101,12 @@ module.exports = {
             data = await Reaction.find({});
             for (const item of data) {
                 if (!(rankings.map(reaction => reaction.name).includes((item.name)))) {
-                    rankings.push({reactionId: item.reactionId, name: item.name, total: 0});
+                    rankings.push({reactionId: item.reactionId, name: item.name, value: 0});
                 }
             }
     
             for (const reaction of rankings) {
-                reaction.total = await Reaction.find({name: reaction.name}).count();
+                reaction.value = await Reaction.find({name: reaction.name}).count();
             }
         }
 
@@ -158,9 +157,9 @@ module.exports = {
 
         function generateFieldValue(thereIsEmoji, entry) {
             if (thereIsEmoji) {
-                return `${guild.members.cache.get(entry.userId).user.displayName} — ${entry.total} times`;
+                return `${guild.members.cache.get(entry.userId).user.displayName} — ${entry.value} times`;
             } else {
-                return `${unwrapEmojiName(entry.reactionId, entry.name)}—\t${entry.total} times`;
+                return `${unwrapEmojiName(entry.reactionId, entry.name)}—\t${entry.value} times`;
 
             }
         }

@@ -5,7 +5,6 @@ const createLeaderboard = require('../../utils/createLeaderboard');
 module.exports = {
     name: 'leaderboard',
     description: 'Show the rankings of the most moneys.',
-    devOnly: true,
 
     callback: async (client, interaction) => {
         const data = await Person.find({});

@@ -49,8 +49,6 @@ module.exports = async (client, message) => {
             if (message[1].embeds) {
                 for (embed of message[1].embeds) {
                     if (embed.url === url) {
-                        console.log("I'm in here!");
-                        console.log(message[1]);
                         message[1].delete();
                         break;
                     }

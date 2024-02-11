@@ -4,6 +4,7 @@ const canArchive = require('../../utils/canArchive');
 const addToArchives = require('../../utils/addToArchives');
 const addArchiveEntry = require('../../utils/addArchiveEntry');
 const unwrapEmojiName = require('../../utils/unwrapEmojiName');
+const { maxReacts } = require('../../../config.json');
 
 /**
  *
@@ -13,8 +14,7 @@ const unwrapEmojiName = require('../../utils/unwrapEmojiName');
  */
 module.exports = async (client, reaction, user) => {
     try {
-        const MAX_REACTS = 1;
-        const wordMax = numberToWords.toWords(MAX_REACTS);
+        const wordMax = numberToWords.toWords(maxReacts);
 
         if (reaction.partial) {
             try {
@@ -35,12 +35,12 @@ module.exports = async (client, reaction, user) => {
         }
 
         // do not add to archives if not at required react threshold
-        if (reaction.count < MAX_REACTS) {
+        if (reaction.count < maxReacts) {
             return;
         }
 
         // do not add to archives if react threshold is obtained exactly but someone has self-reacted
-        if (reaction.count === MAX_REACTS) {
+        if (reaction.count === maxReacts) {
             const allReactUserIds = (await reaction.users.fetch()).keys();
             const originalAuthorId = reaction.message.author.id;
             for (const id of allReactUserIds) {

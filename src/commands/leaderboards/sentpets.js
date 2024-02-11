@@ -10,7 +10,6 @@ const { channelPetsId } = require('../../../config.json');
 module.exports = {
     name: 'sentpets',
     description: 'See who has sent the most pets.',
-    devOnly: true,
 
     callback: async (client, interaction) => {
         const guild = client.guilds.cache.get(interaction.guild.id);
