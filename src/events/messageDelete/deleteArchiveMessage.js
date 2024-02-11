@@ -41,6 +41,23 @@ module.exports = async (client, message) => {
             }
         }
 
+        const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
+
+        const archiveMessages = await archiveChannel.messages.fetch({ limit: 100 });
+
+        for (const message of archiveMessages) {
+            if (message[1].embeds) {
+                for (embed of message[1].embeds) {
+                    if (embed.url === url) {
+                        console.log("I'm in here!");
+                        console.log(message[1]);
+                        message[1].delete();
+                        break;
+                    }
+                }
+            }
+        }
+
         return;        
 
     } catch (error) {
