@@ -15,7 +15,6 @@ module.exports = {
         const DAILY_USAGE = 18;
 
         let desiredIncrease;
-        let earliestHour;
         let chargingHours;
 
         forecasts = forecastsData.forecasts;
@@ -23,13 +22,17 @@ module.exports = {
         let index;
 
         currentTime = new Date();
-
+        // currentTime = new Date(2024, 1, 11, 2, 1, 1, 0);
+        console.log(currentTime);
+        console.log(currentTime.getHours());
         if (currentTime.getHours() <= 5) {
             console.log("Time before 5")
         } else {
             console.log("Time after 5");
         }
 
+
+        let analysedData = [];
         
         for (let i = 0; i < forecasts.length; i++) {
             forecasts[i].period_end = new Date(forecasts[i].period_end); // make it a date object for ease
@@ -37,22 +40,40 @@ module.exports = {
             times.push(forecasts[i].period_end.getTime());
         }
 
-        if (forecasts[0].period_end.getUTCHours() <= 5) {
+        const today = forecasts[0].period_end;
+
+        const todaysDate = forecasts[0].period_end.getUTCDate();
+        const tomorrowsDate = today.getDate() + 1;
+
+        if (currentTime.getHours() <= 5) {
             console.log("Time between 00:00 and 05:00: show today's data.");
-            chargingHours = MAX_CHARGING_HOURS - forecasts[0].period_end.getUTCHours() - 1;
+            chargingHours = MAX_CHARGING_HOURS - currentTime.getHours() - 1;
+
+            for (let i = 0; i < forecasts.length; i++) {
+                if (forecasts[i].period_end.getUTCDate() === todaysDate) {
+                    analysedData.push(forecasts[i]);
+                } else {
+                break;
+                }
+            }
             index = 0;
         } else { 
             console.log("Time after 05:00: show tomorrow's data.");
             chargingHours = MAX_CHARGING_HOURS;
             for (let i = 0; i < forecasts.length; i++) {
-                if (forecasts[i].period_end.getUTCHours() == 0) {
-                    index = i;
+                if (forecasts[i].period_end.getUTCDate() === todaysDate) {
+                    continue;
+                } else if (forecasts[i].period_end.getUTCDate() === tomorrowsDate) {
+                    analysedData.push(forecasts[i]);
+                } else {
                     break;
                 }
             }
         }
 
-        chargingHours = 4;
+        console.log(chargingHours);
+
+        console.log(analysedData);
 
         let message = '';
         for (let i = index; i < index + NUMBER_OF_FORECASTS; i++) {
