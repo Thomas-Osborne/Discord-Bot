@@ -2,6 +2,8 @@ const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const Reaction = require('../../models/Reaction');
 const Person = require('../../models/Person');
 const unwrapEmojiName = require('../../utils/unwrapEmojiName');
+const sortData = require('../../utils/sortData');
+const createLeaderboard = require('../../utils/createLeaderboard');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
 
@@ -146,7 +148,7 @@ module.exports = {
             }
 
             if (user) {
-                return `Which reaction does ${guild.members.cache.get(user.value).user.username} ${sentOrReceivedSubstring} the most?`;
+                return `Which reaction does ${guild.members.cache.get(user.value).user.displayName} ${sentOrReceivedSubstring} the most?`;
             } else if (emojiName) {
                 return `Who reacts the most with ${unwrapEmojiName(emojiId, emojiName)}?`;
             } else {
@@ -156,7 +158,7 @@ module.exports = {
 
         function generateFieldValue(thereIsEmoji, entry) {
             if (thereIsEmoji) {
-                return `${guild.members.cache.get(entry.userId).user.username} — ${entry.total} times`;
+                return `${guild.members.cache.get(entry.userId).user.displayName} — ${entry.total} times`;
             } else {
                 return `${unwrapEmojiName(entry.reactionId, entry.name)}—\t${entry.total} times`;
 
