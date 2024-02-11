@@ -40,6 +40,7 @@ module.exports = async (client, message) => {
             const pet = new Pet({
                 messageId: message.id,
                 guildId: message.guild.id,
+                channelId: message.channel.id,
                 authorId: message.author.id,
                 url: urls[i],
                 timestamp: message.createdTimestamp,

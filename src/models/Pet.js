@@ -9,6 +9,10 @@ const petSchema = new Schema({
         type: String,
         required: true,
     },
+    channelId: {
+        type: String,
+        required: true,
+    },
     authorId: {
         type: String,
         required: true,
