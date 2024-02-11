@@ -1,4 +1,4 @@
-require('dotenv').config();
+const { guildId, channelPetsId } = require('../../../config.json');
 const { Client, Message } = require('discord.js');
 const Pet = require('../../models/Pet');
 const Person = require('../../models/Person');
@@ -10,7 +10,7 @@ const Person = require('../../models/Person');
  */
 module.exports = async (client, message) => {
     try {
-        if (message.guild.id !== process.env.GUILD_ID || message.channel.id !== process.env.CHANNEL_PETS_ID) {
+        if (message.guild.id !== guildId || message.channel.id !== channelPetsId) {
             return;
         }
 

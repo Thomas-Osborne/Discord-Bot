@@ -4,7 +4,8 @@ const sortData = require('../../utils/sortData');
 const Pet = require('../../models/Pet');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
-require('dotenv').config();
+
+const { channelPetsId } = require('../../../config.json');
 
 module.exports = {
     name: 'sentpets',
@@ -31,7 +32,7 @@ module.exports = {
             fieldValues.push(`${guild.members.cache.get(rankings[i].id).user.displayName} — ${rankings[i].value} times`);
         }
 
-        const embed = await createLeaderboard(numberOfRows, 'Pet Sharers', `Who has sent the most images to <#${process.env.CHANNEL_PETS_ID}>?`, Date.now(), fieldValues);
+        const embed = await createLeaderboard(numberOfRows, 'Pet Sharers', `Who has sent the most images to <#${channelPetsId}>?`, Date.now(), fieldValues);
         await interaction.reply({ embeds: [embed]});
 
     }

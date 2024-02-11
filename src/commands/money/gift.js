@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, userMention } = require('discord.js');
+const { ApplicationCommandOptionType } = require('discord.js');
 const Person = require('../../models/Person');
 
 module.exports = {

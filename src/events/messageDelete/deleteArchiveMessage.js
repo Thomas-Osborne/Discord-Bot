@@ -1,4 +1,4 @@
-require('dotenv').config();
+const { guildId, channelArchivesId, channelArchivesListId } = require('../../../config.json');
 const { Client, Message } = require('discord.js');
 const Archive = require('../../models/Message');
 const Person = require('../../models/Person');
@@ -10,7 +10,7 @@ const Person = require('../../models/Person');
  */
 module.exports = async (client, message) => {
     try {
-        if (message.guild.id !== process.env.GUILD_ID) {
+        if (message.guild.id !== guildId) {
             return;
         }
 
@@ -27,7 +27,7 @@ module.exports = async (client, message) => {
 
         const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
-        const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
+        const archiveListChannel = client.channels.cache.get(channelArchivesListId);
 
         const messageList = await archiveListChannel.messages.fetch({ limit: 100 })
 
@@ -41,7 +41,7 @@ module.exports = async (client, message) => {
             }
         }
 
-        const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
+        const archiveChannel = client.channels.cache.get(channelArchivesId);
 
         const archiveMessages = await archiveChannel.messages.fetch({ limit: 100 });
 

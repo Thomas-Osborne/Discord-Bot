@@ -1,4 +1,4 @@
-const { Client, Interaction, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
+const { Client, Interaction } = require('discord.js');
 const addToArchives = require('../../utils/addToArchives');
 const addArchiveEntry = require('../../utils/addArchiveEntry');
 const canArchive = require('../../utils/canArchive');

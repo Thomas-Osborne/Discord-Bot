@@ -1,5 +1,4 @@
-require('dotenv').config();
-
+const { channelArchivesId, channelArchivesListId } = require('../../config.json');
 const { Client, Message, User, EmbedBuilder } = require('discord.js');
 
 /**
@@ -13,8 +12,8 @@ module.exports = async (client, message, archiver, title) => {
     const MAX_DESC_LENGTH = 300; // max number of characters to show in a description
 
     const member = await message.guild.members.fetch(message.author.id); // need to be able to obtain guild member properties like name colour
-    const archiveChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_ID);
-    const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
+    const archiveChannel = client.channels.cache.get(channelArchivesId);
+    const archiveListChannel = client.channels.cache.get(channelArchivesListId);
     const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
 
     const embed = new EmbedBuilder()
