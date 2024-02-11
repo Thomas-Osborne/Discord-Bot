@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
 const Pet = require('../../models/Pet');
-const Person = require('../../models/Person');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
 require('dotenv').config();
