@@ -14,7 +14,7 @@ module.exports = {
         const randomInt = Math.floor(Math.random() * numberOfEntries);
         const chosenPet = data[randomInt];
 
-        const author = guild.members.cache.get(chosenPet.authorId).user.username;
+        const author = guild.members.cache.get(chosenPet.authorId).user.displayname;
 
         const messageUrl = `http://discord.com/channels/${chosenPet.guildId}/${chosenPet.channelId}/${chosenPet.messageId}`
 
