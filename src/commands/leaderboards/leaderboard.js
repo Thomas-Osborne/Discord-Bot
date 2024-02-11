@@ -1,4 +1,3 @@
-const { EmbedBuilder } = require('discord.js');
 const Person = require('../../models/Person');
 const createLeaderboard = require('../../utils/createLeaderboard');
 
