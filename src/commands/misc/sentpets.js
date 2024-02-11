@@ -3,6 +3,7 @@ const Pet = require('../../models/Pet');
 const Person = require('../../models/Person');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
+require('dotenv').config();
 
 module.exports = {
     name: 'sentpets',
@@ -27,7 +28,7 @@ module.exports = {
         const embed = new EmbedBuilder()
 
         .setTitle('Leaderboard')
-        .setDescription('Who has sent the most images to the pets channel?')
+        .setDescription(`Who has sent the most images to <#${process.env.CHANNEL_PETS_ID}>?`)
         .setTimestamp(Date.now())
 
         const numberOfRows = Math.min(ranks.length, 10);
