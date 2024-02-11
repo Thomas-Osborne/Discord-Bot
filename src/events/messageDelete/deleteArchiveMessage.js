@@ -16,8 +16,6 @@ module.exports = async (client, message) => {
 
         const archivedMessage = await Archive.findOneAndDelete({ messageId: message.id, channelId: message.channelId, guildId: message.guildId});
 
-        console.log(archivedMessage);
-
         if (!archivedMessage) {
             return;
         }
@@ -26,6 +24,22 @@ module.exports = async (client, message) => {
             author.messagesArchived.pull(archivedMessage._id);
             author.save()
                 .catch(error => console.error(`Error updating author when deleting archived message: ${error}`));
+
+        const url = `http://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
+
+        const archiveListChannel = client.channels.cache.get(process.env.CHANNEL_ARCHIVES_LIST_ID);
+
+        const messageList = await archiveListChannel.messages.fetch({ limit: 100 })
+
+        for (const message of messageList) {
+            if (message[1].content.includes(url)) {
+                let regex = new RegExp(`\\[([^\\[\\]]+)\\]\\(${url}\\)`);
+                message[1].edit(message[1].content.replace(regex, ''));
+                break;
+            } else {
+                return;
+            }
+        }
 
         return;        
 

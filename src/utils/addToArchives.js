@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { Client, Message, User, EmbedBuilder } = require('discord.js');
 
 /**
@@ -35,7 +37,7 @@ module.exports = async (client, message, archiver, title) => {
     const embedUrl = await sentEmbed.url;
 
     const date = new Date(message.createdTimestamp);
-    const stringToSend = `[• ${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
+    const stringToSend = `[${date.toLocaleString().substring(0, date.toLocaleString().indexOf(','))} — ${member.displayName} — ${title}](${url})`;
 
     archiveListChannel.messages
         .fetch({ limit: 1 })
