@@ -18,10 +18,10 @@ module.exports = async (client, message) => {
         return;
     }
 
-    console.log(message.createdTimestamp);
-
     if (message.attachments) {
-        const urls = message.attachments.map(attachment => attachment.url);
+        let urls = message.attachments
+            .filter(attachment => attachment.contentType.startsWith('image')) // only get image attachments
+            .map(attachment => attachment.url);
 
         let author = await Person.findOne({ userId: message.author.id });
 
