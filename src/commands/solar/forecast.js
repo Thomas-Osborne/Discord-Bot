@@ -74,11 +74,9 @@ module.exports = {
 
         }
 
-        desiredIncrease = 49;
-
-        for (let i = 0; i < analysedData.length; i++) {
-            console.log(analysedData[i].pv_estimate);
-        }
+        let currentSoc;
+        desiredIncrease = estimateDesiredIncrease(analysedData, 6, 10);
+        console.log(desiredIncrease);
 
         let kwPerHoursRequired = (TOTAL_BATTERY_CAPACITY) * (desiredIncrease) / 100;
         let kwPerHourRate = (kwPerHoursRequired) / Math.min(chargingHours, MAX_CHARGING_HOURS);
@@ -86,30 +84,46 @@ module.exports = {
 
         interaction.reply(
         `charging hours: ${chargingHours}
-        desired increase: ${desiredIncrease}
-        required kwh: ${Math.round(kwPerHoursRequired * 100)/ 100}
+        desired increase: ${Math.round(desiredIncrease * 100) / 100}
+        required kwh: ${Math.round(kwPerHoursRequired * 100) / 100}
         current: ${Math.round(current * 100) / 100}`); // round to 2dp
-    
-    
-    }
-}
-
-function estimatePv(data) {
-    // use trapezium rule
-    const TIME_GRANULARITY = 0.5;
-    let estimate = 0;
-    if (data.length == 0) {
-        return 0;
-    } else if (data.length == 1) {
-        return data[0].pv_estimate;
-    } else {
-        estimate += data[0].pv_estimate;
-        for (let i = 1; i < data.length - 1; i++) {
-            estimate += 2 * data[i].pv_estimate;
+            
+        function estimatePv(data) {
+            // use trapezium rule
+            const TIME_GRANULARITY = 0.5;
+            let estimate = 0;
+            if (data.length == 0) {
+                return 0;
+            } else if (data.length == 1) {
+                return data[0].pv_estimate;
+            } else {
+                estimate += data[0].pv_estimate;
+                for (let i = 1; i < data.length - 1; i++) {
+                    estimate += 2 * data[i].pv_estimate;
+                }
+                estimate += data[data.length - 1].pv_estimate;
+                estimate = TIME_GRANULARITY / 2 * estimate;
+                return estimate;
+            }
         }
-        estimate += data[data.length - 1].pv_estimate;
-        estimate = TIME_GRANULARITY / 2 * estimate;
-        return estimate;
+
+        function estimateDesiredIncrease(data, expectedYield, currentSoc) {
+            const DAILY_USE = 18;
+            let battery = TOTAL_BATTERY_CAPACITY / 100 * currentSoc;
+        
+            let requiredKwPerHour = DAILY_USE - expectedYield;
+            console.log(requiredKwPerHour); 
+        
+            console.log("minVal", battery + (DAILY_USE - expectedYield))
+
+            const socIncrease = (battery + (DAILY_USE - expectedYield)) / TOTAL_BATTERY_CAPACITY * 100;
+            return socIncrease;
+        }
+
+        function approximateLoss(data) {
+            // TODO
+        }
+    
     }
 }
 
