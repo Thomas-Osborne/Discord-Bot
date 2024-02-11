@@ -21,7 +21,6 @@ module.exports = {
             rankings.push({id: id, value: count});
         }
 
-        console.log(rankings);
         rankings = rankings
             .sort((a, b) => b.value - a.value)
             .filter(pet => pet.value > 0);
