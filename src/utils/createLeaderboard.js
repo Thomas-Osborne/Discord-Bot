@@ -1,9 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-module.exports = async (data, rows, title, description, timestamp, fieldValues) => {
-    data = data
-    .sort((a, b) => b.value - a.value)
-    .filter(member => member.value > 0);
+module.exports = async (rows, title, description, timestamp, fieldValues) => {
 
 
 const embed = new EmbedBuilder()
