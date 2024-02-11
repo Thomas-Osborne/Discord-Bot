@@ -47,7 +47,6 @@ module.exports = async (client, message) => {
             await pet.save()
             .catch(error => console.error(`Error creating new pet entry: ${error}`));
 
-            console.log(author);
             author.petPictures.push(pet._id)
             await author.save()
                 .catch(error => console.error(`Error adding pet to author: ${error}`));
