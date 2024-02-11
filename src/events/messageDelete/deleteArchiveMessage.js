@@ -33,7 +33,7 @@ module.exports = async (client, message) => {
 
         for (const message of messageList) {
             if (message[1].content.includes(url)) {
-                let regex = new RegExp(`\\[([^\\[\\]]+)\\]\\(${url}\\)`);
+                let regex = new RegExp(`\\[([^\\[\\]]+)\\]\\(${url}\\)\\n?`);
                 message[1].edit(message[1].content.replace(regex, ''));
                 break;
             } else {
