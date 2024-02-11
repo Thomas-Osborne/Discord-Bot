@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const createLeaderboard = require('../../utils/createLeaderboard');
 const Pet = require('../../models/Pet');
 const formatDate = require('../../utils/formatDate');
 const getDateMonthYear = require('../../utils/getDateMonthYear');
@@ -14,43 +14,28 @@ module.exports = {
         await guild.members.fetch();
         const membersId = guild.members.cache.map(member => member.id);
 
-        let ranks = [];
+        let rankings = [];
         for (const id of membersId) {
             count = await Pet.find( { authorId: id }).count();
-            ranks.push({userId: id, total: count});
+            console.log(count);
+            rankings.push({id: id, value: count});
         }
 
-        ranks = ranks
-            .sort((a, b) => b.total - a.total)
-            .filter(reaction => reaction.total > 0);
+        console.log(rankings);
+        rankings = rankings
+            .sort((a, b) => b.value - a.value)
+            .filter(pet => pet.value > 0);
 
-        const embed = new EmbedBuilder()
-
-        .setTitle('Leaderboard')
-        .setDescription(`Who has sent the most images to <#${process.env.CHANNEL_PETS_ID}>?`)
-        .setTimestamp(Date.now())
-
-        const numberOfRows = Math.min(ranks.length, 10);
-        
+        const numberOfRows = Math.min(rankings.length, 10);
+        const fieldValues = []
+    
         for (let i = 0; i < numberOfRows; i++) {
-            if (i === 0) {
-                nameString = '🥇 1st Place 🥇'
-            } else if (i === 1) {
-                nameString = '🥈 2nd Place 🥈'
-            } else if (i === 2) {
-                nameString = '🥉 3rd Place 🥉'
-            } else {
-                nameString = `${i + 1}th Place`
-            }
-            embed.addFields(
-                {name: nameString, value: generateFieldValue(ranks[i])},
-            )
+            fieldValues.push(`${guild.members.cache.get(rankings[i].id).user.username} — ${rankings[i].value} times`);
         }
+
+        const embed = await createLeaderboard(numberOfRows, 'Leaderboard', `Who has sent the most images to <#${process.env.CHANNEL_PETS_ID}>?`, Date.now(), fieldValues);
         await interaction.reply({ embeds: [embed]});
 
-        function generateFieldValue(entry) {
-            return `${guild.members.cache.get(entry.userId).user.username} — ${entry.total} times`;
-        }
     }
 
 
