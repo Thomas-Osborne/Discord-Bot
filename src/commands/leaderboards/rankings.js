@@ -159,7 +159,7 @@ module.exports = {
             if (thereIsEmoji) {
                 return `${guild.members.cache.get(entry.userId).user.username} — ${entry.total} times`;
             } else {
-                return `${unwrapEmojiName(entry.reactionId, entry.name)}—\t${entry.total}`;
+                return `${unwrapEmojiName(entry.reactionId, entry.name)}—\t${entry.total} times`;
 
             }
         }
