@@ -44,6 +44,7 @@ module.exports = {
             for (let i = 0; i < forecasts.length; i++) {
                 if (forecasts[i].period_end.getUTCDate() === todaysDate) {
                     analysedData.push(forecasts[i]);
+                    console.log(analysedData[i].pv_estimate);
                 } else {
                 break;
                 }
@@ -58,6 +59,7 @@ module.exports = {
                     continue;
                 } else if (forecasts[i].period_end.getUTCDate() === tomorrowsDate) {
                     analysedData.push(forecasts[i]);
+                    console.log(forecasts[i].pv_estimate);
                 } else {
                     break;
                 }
@@ -102,7 +104,8 @@ module.exports = {
                     estimate += 2 * data[i].pv_estimate;
                 }
                 estimate += data[data.length - 1].pv_estimate;
-                estimate = TIME_GRANULARITY / 2 * estimate;
+                estimate /= 2;
+                estimate *= TIME_GRANULARITY;
                 return estimate;
             }
         }
