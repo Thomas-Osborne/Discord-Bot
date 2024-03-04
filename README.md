@@ -19,7 +19,7 @@ Welcome to my Discord Bot! This repository was made in view of me learning how N
 - `/sentpets` Returns an embed with which members send the most pets to the designated Pet Channel.
 
 ### Context-Menu Commands
-- `Add to Archives' sends an embed of the message chosen to a different channel and updates the hall of fame.
+- `Add to Archives` sends an embed of the message chosen to a different channel and updates the hall of fame.
 - `Context Ping` returns the client ping.
 
 ### Key Events
